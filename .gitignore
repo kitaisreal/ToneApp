@@ -5,6 +5,9 @@
 # Files for the ART/Dalvik VM
 *.dex
 
+#IntellijIdea
+.idea
+
 # Java class files
 *.class
 
@@ -14,6 +17,7 @@ gen/
 out/
 
 # Gradle files
+gradle
 .gradle/
 build/
 
