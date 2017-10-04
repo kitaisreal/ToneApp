@@ -1,13 +1,8 @@
 package com.example.yetti.toneplayer;
 
 import android.app.Fragment;
-import android.content.ContentResolver;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
@@ -30,13 +25,11 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
     List<Song> list;
     TestService.myBinder songServiceBinder;
     MusicController mc;
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         list=new ArrayList<>();
     }
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,21 +44,33 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
             System.out.println(songServiceBinder);
             list = bundle.getParcelableArrayList("songs");
         }
-        Adapter adapter = new Adapter(getContext(),list);
-        mc = new MusicController(getContext());
+        Adapter adapter = new Adapter(getActivity(),list);
+        mc = new MusicController(getActivity());
         mc.setMediaPlayer(this);
         mc.setAnchorView(v.findViewById(R.id.mediaController));
         mc.setEnabled(false);
-        mc.setOnClickListener(l->{
-            System.out.println("CLICK ON MEDIA PLAYER");
-        });
-        mc.setPrevNextListeners(v1 -> {
-            System.out.println("LETS GO NEXT");
-        }, v12 -> {
-            System.out.println("LETS GO PREVIOUS");
+        listView.setAdapter(adapter);
+        mc.setPrevNextListeners(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("LETS GO NEXT");
+            }
+        },new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                System.out.println("LETS GO PREVIOUS");
+            }
         });
         listView.setAdapter(adapter);
-        listView.setOnItemClickListener((parent, view, position, id) -> {songServiceBinder.getService().playSong(id);mc.show(0);mc.setEnabled(true);});
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                songServiceBinder.getService().playSong(id);
+                mc.show(0);
+                mc.setEnabled(true);
+            }
+        });
 
         return v;
     }

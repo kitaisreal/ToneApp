@@ -13,7 +13,7 @@ import java.util.List;
 public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
-    public void createPlaylist(Playlist song) {
+    public void createPlaylist(Playlist playlist) {
     }
 
     @Override
@@ -22,12 +22,12 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
-    public void updatePlaylist(Playlist song) {
+    public void updatePlaylist(Playlist playlist) {
 
     }
 
     @Override
-    public List<Playlist> getAllPlaylists() {
+    public List<Playlist> getAllPlaylist() {
         return null;
     }
 }

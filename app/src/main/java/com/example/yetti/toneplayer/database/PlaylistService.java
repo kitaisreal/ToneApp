@@ -6,8 +6,8 @@ import com.example.yetti.toneplayer.model.Song;
 import java.util.List;
 
 public interface PlaylistService {
-    void createPlaylist(Playlist song);
+    void createPlaylist(Playlist playlist);
     void deletePlaylist(Long id);
-    void updatePlaylist(Playlist song);
-    List<Playlist> getAllPlaylists();
+    void updatePlaylist(Playlist playlist);
+    List<Playlist> getAllPlaylist();
 }

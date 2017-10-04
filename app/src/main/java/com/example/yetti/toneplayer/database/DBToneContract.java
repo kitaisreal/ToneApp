@@ -33,7 +33,7 @@ public final class DBToneContract {
                 "DROP TABLE IF EXISTS " + SongEntry.TABLE_NAME;
     }
     public static abstract class PlaylistEntry implements BaseColumns{
-        public static final String TABLE_NAME ="playlists";
+        public static final String TABLE_NAME ="playlist";
         public static final String COLUMN_NAME_ENTRY_ID="playlist_id";
         public static final String COLUMN_NAME_PLAYLIST_NAME="playlist_name";
         public static final String SQL_CREATE_ENTRIES =

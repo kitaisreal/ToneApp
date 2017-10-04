@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -22,7 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ProgressBar;
 
-import com.example.yetti.toneplayer.database.DBToneContract;
+import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.SongService;
@@ -30,14 +31,14 @@ import com.example.yetti.toneplayer.database.impl.SongServiceImpl;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.service.TestService;
 
+import java.sql.SQLOutput;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     //TODO ADD NAVIGATION DRAWLER PLAYLIST FRAGMENT (ON REQUEST ADD) CONTROLS
     ArrayList<Song> list;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
-    ProgressBar progressBar;
-    TestService testService;
     boolean bound = false;
     ServiceConnection sConn;
     Intent intent;
@@ -47,21 +48,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        DBToneHelper db = new DBToneHelper(this);
         setContentView(R.layout.activity_main);
         list = new ArrayList<>();
         intent = new Intent(this,TestService.class);
         if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             getSongList();
         }
-
         DatabaseManager.initializeInstance(new DBToneHelper(this));
-        SongService songService = new SongServiceImpl();
-        songService.getAllSongs();
-        Song song = list.get(0);
-        song.setSong_weight(100);
-        songService.updateSong(song);
-        songService.getAllSongs();
+        SongServiceImpl songService = new SongServiceImpl();
+        songService.addSongs(list, new ICallbackResult<Boolean>() {
+            @Override
+            public void onSuccess(Boolean aBoolean) {
+                System.out.println("SONGS ADDED");
+            }
+
+            @Override
+            public void onFail(Exception e) {
+                System.out.println("SONGS DONT ADDED");
+            }
+        });
         sConn = new ServiceConnection() {
             public void onServiceConnected(ComponentName name, IBinder binder) {
                 Log.d("SERVICE", "MainActivity onServiceConnected");
@@ -72,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putBinder("songServiceBinder",songServiceBinder);
                 bundle.putParcelableArrayList("songs", list);
                 System.out.println(bundle.size());
-                list.forEach(System.out::println);
                 System.out.println("BUNDLE SIZE " + bundle.size());
                 fragment= new SongList();
                 fragment.setArguments(bundle);
@@ -86,52 +90,12 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         bindService(intent,sConn,BIND_AUTO_CREATE);
-
     }
-    public void onClickStart() {
-        startService(intent);
-    }
-
-    public void onClickStop() {
-        super.onStop();
-        if (!bound) return;
-        unbindService(sConn);
-        bound = false;
-    }
-
-    public void onClickBind() {
-        bindService(intent, sConn, BIND_AUTO_CREATE);
-    }
-
-    public void onClickUnBind() {
-        if (!bound) return;
-        unbindService(sConn);
-        bound = false;
-    }
-
     protected void onDestroy() {
         super.onDestroy();
-        onClickUnBind();
-    }
-    class textViewChange extends AsyncTask<Void,Integer,Integer>{
-
-        @Override
-        protected Integer doInBackground(Void... params) {
-            for (Integer i=0;i<=100;i++){
-                try {
-                    Thread.sleep(1000);
-                    publishProgress(i);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-            return 0;
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            progressBar.setProgress(values[0]);
-        }
+        if (!bound) return;
+        unbindService(sConn);
+        bound=false;
     }
     public boolean checkPermissionREAD_EXTERNAL_STORAGE(
             final Context context) {
@@ -178,6 +142,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog alert = alertBuilder.create();
         alert.show();
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions, int[] grantResults) {
