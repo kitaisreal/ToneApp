@@ -80,8 +80,6 @@ public class HttpClient {
                 stream.write(body);
                 stream.close();
             }
-            urlConnection.setDoInput(true);
-            urlConnection.setDoOutput(true);
         } catch (Exception e) {
             e.printStackTrace();
         }

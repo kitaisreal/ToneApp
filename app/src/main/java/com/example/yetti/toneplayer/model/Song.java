@@ -19,7 +19,9 @@ public class Song implements Parcelable{
         this.song_weight = song_weight;
         this.song_playlist=song_playlist;
     }
+    public Song(){
 
+    }
     protected Song(Parcel in) {
         song_id = in.readLong();
         song_artist = in.readString();

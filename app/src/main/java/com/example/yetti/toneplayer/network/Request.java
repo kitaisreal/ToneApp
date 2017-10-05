@@ -21,7 +21,10 @@ public class Request {
         this.method = method;
         this.body = body;
     }
-
+    public Request(String url, String method){
+        this.url=url;
+        this.method=method;
+    }
     public String getUrl() {
         return url;
     }

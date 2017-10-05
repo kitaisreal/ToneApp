@@ -26,8 +26,10 @@ import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.impl.SongServiceImpl;
+import com.example.yetti.toneplayer.json.JsonHandler;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.network.HttpClient;
+import com.example.yetti.toneplayer.network.HttpContract;
 import com.example.yetti.toneplayer.network.Request;
 import com.example.yetti.toneplayer.service.SongService;
 import com.example.yetti.toneplayer.service.SongServiceManager;
@@ -52,23 +54,15 @@ public class MainActivity extends AppCompatActivity {
     SongList fragment;
     SongServiceManager songServiceManager;
     public SongService.myBinder songServiceBinder;
+    HttpClient httpClient;
+    JsonHandler jsonHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         songServiceManager = new SongServiceManager();
-        HttpClient httpClient = new HttpClient();
-        httpClient.createRequest(new Request("http://192.168.100.3:8080/api/getStats", "POST", "TESTTHIS"), new ICallbackResult<String>() {
-            @Override
-            public void onSuccess(String s) {
-                System.out.println(s);
-            }
-
-            @Override
-            public void onFail(Exception e) {
-                System.out.println("EXCEPTION");
-            }
-        });
+        httpClient = new HttpClient();
+        jsonHandler = new JsonHandler();
         list = new ArrayList<>();
         intent = new Intent(this,SongService.class);
         DatabaseManager.initializeInstance(new DBToneHelper(this));
@@ -96,6 +90,31 @@ public class MainActivity extends AppCompatActivity {
                 for (Song song:songs){
                     System.out.println(song.getSong_id() + " " + song.getSong_name() + " " + song.getSong_artist());
                 }
+                test();
+            }
+
+            @Override
+            public void onFail(Exception e) {
+
+            }
+        });
+    }
+    private void test(){
+        jsonHandler.ConvertSongsToJson(list, new ICallbackResult<String>() {
+            @Override
+            public void onSuccess(String s) {
+                System.out.println("S TO POST " + s);
+                httpClient.createRequest(new Request("http://192.168.100.3:8080/api/testPostSongs", "POST", s), new ICallbackResult<String>() {
+                    @Override
+                    public void onSuccess(String s) {
+                        System.out.println("RESPONCE FROM POST " + s);
+                    }
+
+                    @Override
+                    public void onFail(Exception e) {
+
+                    }
+                });
             }
 
             @Override
