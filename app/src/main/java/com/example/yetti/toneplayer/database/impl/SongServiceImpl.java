@@ -30,7 +30,14 @@ public class SongServiceImpl implements SongService {
                         values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSong_name());
                         values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSong_weight());
                         values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSong_playlist());
-                        sqLiteDatabase.insert(DBToneContract.SongEntry.TABLE_NAME, null, values);
+                        Cursor c = sqLiteDatabase.rawQuery("select * from " + DBToneContract.SongEntry.TABLE_NAME + " where " + DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID
+                                + "='" + song.getSong_id() + "'", null);
+                        if (c.moveToFirst()) {
+                            c.close();
+                        } else{
+                            c.close();
+                            sqLiteDatabase.insert(DBToneContract.SongEntry.TABLE_NAME, null, values);
+                        }
                     }
                     sqLiteDatabase.close();
                     DatabaseManager.getInstance().closeDatabase();
@@ -40,6 +47,43 @@ public class SongServiceImpl implements SongService {
                     if (iResultCallback!=null) {
                         final Exception addSongsEx = new Exception("DB ADD SONGS EXCEPTION");
                         iResultCallback.onFail(addSongsEx);
+                    }
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                if (iResultCallback!=null){
+                    iResultCallback.onSuccess(aBoolean);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void updateSongs(final List<Song> songs,final ICallbackResult<Boolean> iResultCallback) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                try{
+                    SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
+                    for (Song song:songs) {
+                        ContentValues values = new ContentValues();
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST, song.getSong_artist());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSong_name());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSong_weight());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSong_playlist());
+                        sqLiteDatabase.update(DBToneContract.SongEntry.TABLE_NAME, values, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + "=?", new String[]{String.valueOf(song.getSong_id())});
+                    }
+
+                    sqLiteDatabase.close();
+                    DatabaseManager.getInstance().closeDatabase();
+                    return true;
+                }
+                catch (Exception e){
+                    if (iResultCallback!=null) {
+                        final Exception updateSong= new Exception("DB UPDATE SONGS EXCEPTION");
+                        iResultCallback.onFail(updateSong);
                     }
                     return null;
                 }

@@ -1,10 +1,8 @@
 package com.example.yetti.toneplayer;
 
 import android.app.Fragment;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +11,10 @@ import android.widget.ListView;
 import android.widget.MediaController;
 
 import com.example.yetti.toneplayer.adapter.Adapter;
+import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.controller.MusicController;
 import com.example.yetti.toneplayer.model.Song;
-import com.example.yetti.toneplayer.service.TestService;
+import com.example.yetti.toneplayer.service.SongService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.List;
 public class SongList extends Fragment implements MediaController.MediaPlayerControl {
     //TODO CHANGE FRAGMENT
     List<Song> list;
-    TestService.myBinder songServiceBinder;
+    SongService.myBinder songServiceBinder;
     MusicController mc;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +39,7 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             System.out.println(bundle.size());
-            songServiceBinder= (TestService.myBinder) bundle.getBinder("songServiceBinder");
+            songServiceBinder= (SongService.myBinder) bundle.getBinder("songServiceBinder");
             System.out.println(songServiceBinder);
             list = bundle.getParcelableArrayList("songs");
         }
@@ -71,7 +70,6 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
                 mc.setEnabled(true);
             }
         });
-
         return v;
     }
     @Override

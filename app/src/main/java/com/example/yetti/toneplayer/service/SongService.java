@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 
-public class TestService extends Service implements
+public class SongService extends Service implements
         MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener {
     //TODO ADD PLAYMODE
@@ -145,8 +145,8 @@ public class TestService extends Service implements
     }
 
     public class myBinder extends Binder{
-        public TestService getService(){
-            return TestService.this;
+        public SongService getService(){
+            return SongService.this;
         }
     }
     public void testBind(){
