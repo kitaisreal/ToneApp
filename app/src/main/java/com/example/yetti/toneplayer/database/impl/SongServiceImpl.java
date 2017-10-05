@@ -8,14 +8,14 @@ import android.os.AsyncTask;
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DatabaseManager;
-import com.example.yetti.toneplayer.database.SongService;
+import com.example.yetti.toneplayer.database.ISongService;
 import com.example.yetti.toneplayer.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class SongServiceImpl implements SongService {
+public class SongServiceImpl implements ISongService {
     @Override
     public void addSongs(final ArrayList<Song> songs, final ICallbackResult<Boolean> iResultCallback) {
         new AsyncTask<Void, Void, Boolean>() {
@@ -180,7 +180,7 @@ public class SongServiceImpl implements SongService {
                         int songPlaylist = c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST);
                         sqLiteDatabase.close();
                         DatabaseManager.getInstance().closeDatabase();
-                        Song song = new Song(c.getInt(idColIndex), c.getString(songArtist), c.getString(songTitle), c.getInt(songWeight), c.getString(songPlaylist));
+                        Song song = new Song(c.getInt(idColIndex), c.getString(songArtist), c.getString(songTitle), c.getInt(songWeight), c.getInt(songPlaylist));
                         c.close();
                         return song;
                     }
@@ -217,7 +217,7 @@ public class SongServiceImpl implements SongService {
                         int songWeight = c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT);
                         int songPlaylist = c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST);
                         do {
-                            songs.add(new Song(c.getInt(idColIndex), c.getString(songArtist), c.getString(songTitle), c.getInt(songWeight), c.getString(songPlaylist)));
+                            songs.add(new Song(c.getInt(idColIndex), c.getString(songArtist), c.getString(songTitle), c.getInt(songWeight), c.getInt(songPlaylist)));
                         } while (c.moveToNext());
                         c.close();
                         sqLiteDatabase.close();
@@ -244,7 +244,7 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
-    public void getSongsByPlaylist(final String SongPlaylist, final ICallbackResult<List<Song>> iResultCallback) {
+    public void getSongsByPlaylist(final int SongPlaylist, final ICallbackResult<List<Song>> iResultCallback) {
         new AsyncTask<Void, Void, List<Song>>() {
             @Override
             protected List<Song> doInBackground(Void... params) {
@@ -258,8 +258,8 @@ public class SongServiceImpl implements SongService {
                         int songWeight = c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT);
                         int songPlaylist = c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST);
                         do {
-                            if (Objects.equals(c.getString(songPlaylist), SongPlaylist)) {
-                                songs.add(new Song(c.getInt(idColIndex), c.getString(songArtist), c.getString(songTitle), c.getInt(songWeight), c.getString(songPlaylist)));
+                            if (Objects.equals(c.getInt(songPlaylist), SongPlaylist)) {
+                                songs.add(new Song(c.getInt(idColIndex), c.getString(songArtist), c.getString(songTitle), c.getInt(songWeight), c.getInt(songPlaylist)));
                             }
                         } while (c.moveToNext());
                         c.close();

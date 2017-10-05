@@ -25,22 +25,15 @@ import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
+import com.example.yetti.toneplayer.database.ISongService;
 import com.example.yetti.toneplayer.database.impl.SongServiceImpl;
 import com.example.yetti.toneplayer.json.JsonHandler;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.network.HttpClient;
-import com.example.yetti.toneplayer.network.HttpContract;
 import com.example.yetti.toneplayer.network.Request;
 import com.example.yetti.toneplayer.service.SongService;
 import com.example.yetti.toneplayer.service.SongServiceManager;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public SongService.myBinder songServiceBinder;
     HttpClient httpClient;
     JsonHandler jsonHandler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,42 +58,39 @@ public class MainActivity extends AppCompatActivity {
         httpClient = new HttpClient();
         jsonHandler = new JsonHandler();
         list = new ArrayList<>();
-        intent = new Intent(this,SongService.class);
+        intent = new Intent(this, SongService.class);
+        this.deleteDatabase(DBToneContract.DATABASE_NAME);
         DatabaseManager.initializeInstance(new DBToneHelper(this));
+        final SongServiceImpl songService = new SongServiceImpl();
         if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             getSongList(new ICallbackResult<List<Song>>() {
                 @Override
                 public void onSuccess(List<Song> songs) {
+                    songService.addSongs((ArrayList<Song>) songs, new ICallbackResult<Boolean>() {
+                        @Override
+                        public void onSuccess(Boolean aBoolean) {
+                            test();
+                            bindService(intent, sConn, BIND_AUTO_CREATE);
+                        }
 
-                    bindService(intent,sConn,BIND_AUTO_CREATE);
+                        @Override
+                        public void onFail(Exception e) {
+
+                        }
+                    });
                 }
+
                 @Override
                 public void onFail(Exception e) {
 
                 }
             });
-        };
-        final SongServiceImpl songService = new SongServiceImpl();
-        addSongsToDB(songService);
-        addSongsToDB(songService);
-        addSongsToDB(songService);
-        songService.getAllSongs(new ICallbackResult<List<Song>>() {
-            @Override
-            public void onSuccess(List<Song> songs) {
-                System.out.println("SONG IN DATABASE" + songs.size());
-                for (Song song:songs){
-                    System.out.println(song.getSong_id() + " " + song.getSong_name() + " " + song.getSong_artist());
-                }
-                test();
-            }
+        }
+        ;
 
-            @Override
-            public void onFail(Exception e) {
-
-            }
-        });
     }
-    private void test(){
+
+    private void test() {
         jsonHandler.ConvertSongsToJson(list, new ICallbackResult<String>() {
             @Override
             public void onSuccess(String s) {
@@ -123,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    private void addSongsToDB(com.example.yetti.toneplayer.database.SongService songService){
+
+    private void addSongsToDB(ISongService songService) {
         songService.addSongs(list, new ICallbackResult<Boolean>() {
             @Override
             public void onSuccess(Boolean aBoolean) {
@@ -136,34 +128,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
     private ServiceConnection sConn = new ServiceConnection() {
         public void onServiceConnected(ComponentName name, IBinder binder) {
             Log.d("SERVICE", "MainActivity onServiceConnected");
             songServiceBinder = (SongService.myBinder) binder;
             System.out.println("SONG SERVICE BINDER" + songServiceBinder);
-            System.out.println("SONG SERVICE " + songServiceBinder.getService() );
+            System.out.println("SONG SERVICE " + songServiceBinder.getService());
             bound = true;
             Bundle bundle = new Bundle();
-            bundle.putBinder("songServiceBinder",songServiceBinder);
+            bundle.putBinder("songServiceBinder", songServiceBinder);
             bundle.putParcelableArrayList("songs", list);
-            fragment= new SongList();
+            fragment = new SongList();
             fragment.setArguments(bundle);
-            ft=getFragmentManager().beginTransaction();
-            ft.add(R.id.frgmCont,fragment);
+            ft = getFragmentManager().beginTransaction();
+            ft.add(R.id.frgmCont, fragment);
             ft.commit();
 
         }
-    public void onServiceDisconnected(ComponentName name) {
-        Log.d("SERVICE", "MainActivity onServiceDisconnected");
-        bound = false;
+
+        public void onServiceDisconnected(ComponentName name) {
+            Log.d("SERVICE", "MainActivity onServiceDisconnected");
+            bound = false;
         }
     };
+
     protected void onDestroy() {
         super.onDestroy();
         if (!bound) return;
         unbindService(sConn);
-        bound=false;
+        bound = false;
     }
+
     public boolean checkPermissionREAD_EXTERNAL_STORAGE(
             final Context context) {
         int currentAPIVersion = Build.VERSION.SDK_INT;
@@ -180,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
                     ActivityCompat
                             .requestPermissions(
                                     (Activity) context,
-                                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                 }
                 return false;
@@ -192,6 +188,7 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     }
+
     public void showDialog(final String msg, final Context context,
                            final String permission) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
@@ -202,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions((Activity) context,
-                                new String[] { permission },
+                                new String[]{permission},
                                 MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                     }
                 });
@@ -225,11 +222,12 @@ public class MainActivity extends AppCompatActivity {
                         grantResults);
         }
     }
-    private void getSongList(final ICallbackResult<List<Song>> callbackResult){
+
+    private void getSongList(final ICallbackResult<List<Song>> callbackResult) {
         new AsyncTask<Void, Void, List<Song>>() {
             @Override
             protected List<Song> doInBackground(Void... params) {
-                try{
+                try {
                     ContentResolver musicResolver = getContentResolver();
                     Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                     Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
@@ -244,14 +242,13 @@ public class MainActivity extends AppCompatActivity {
                             long thisId = musicCursor.getLong(idColumn);
                             String thisTitle = musicCursor.getString(titleColumn);
                             String thisArtist = musicCursor.getString(artistColumn);
-                            list.add(new Song(thisId, thisTitle, thisArtist, 0, ""));
+                            list.add(new Song(thisId, thisArtist, thisTitle, 0, -1));
                         }
                         while (musicCursor.moveToNext());
                     }
                     return list;
-                }
-                catch (Exception e){
-                    if (callbackResult!=null) {
+                } catch (Exception e) {
+                    if (callbackResult != null) {
                         final Exception exception = new Exception("GET SONG FROM DEVICE EXCEPTION");
                         callbackResult.onFail(exception);
                     }
@@ -261,10 +258,10 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(List<Song> songs) {
-                if (callbackResult!=null) {
+                if (callbackResult != null) {
                     callbackResult.onSuccess(list);
                 }
             }
         }.execute();
-        }
+    }
 }

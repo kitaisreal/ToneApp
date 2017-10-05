@@ -13,19 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 //TODO LIST<SONG>-> JSON JSON 0> LIST<SONG> simpleJSON or gson
-public class JsonHandler {
+public class JsonHandler implements IJsonHandler{
+    @Override
     public void ConvertSongsToJson(final List<Song> songs, final ICallbackResult<String> iCallbackResult){
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
                 try {
                     System.out.println("CONVERT SONGS TO JSON");
-                    StringBuilder songsJson = new StringBuilder();
-                    for (Song s: songs){
-                        System.out.println("SONG " + s.getSong_artist());
-                        songsJson.append(ConvertSongToJson(s).toString());
+                    JSONArray jsonArray = new JSONArray();
+                    for (Song s: songs) {
+                        jsonArray.put(ConvertSongToJson(s));
                     }
-                    return songsJson.toString();
+                    return jsonArray.toString();
                 } catch (Exception e) {
                     Exception exception = new Exception("CONVERT SONGS TO JSON EXCEPTION");
                     if (iCallbackResult!=null){
@@ -42,6 +42,7 @@ public class JsonHandler {
             }
         }.execute();
     }
+    @Override
     public void ConvertJsonToSongs(final String json, final ICallbackResult<List<Song>> iCallbackResult){
         new AsyncTask<Void, Void, List<Song>>() {
             @Override

@@ -1,16 +1,11 @@
 package com.example.yetti.toneplayer.database.impl;
 
-import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
-
-import com.example.yetti.toneplayer.database.DBToneContract;
-import com.example.yetti.toneplayer.database.DatabaseManager;
-import com.example.yetti.toneplayer.database.PlaylistService;
+import com.example.yetti.toneplayer.database.IPlaylistService;
 import com.example.yetti.toneplayer.model.Playlist;
 
 import java.util.List;
 
-public class PlaylistServiceImpl implements PlaylistService{
+public class PlaylistServiceImpl implements IPlaylistService {
 
     @Override
     public void createPlaylist(Playlist playlist) {

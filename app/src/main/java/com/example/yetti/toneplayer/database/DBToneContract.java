@@ -3,8 +3,6 @@ package com.example.yetti.toneplayer.database;
 
 import android.provider.BaseColumns;
 
-import com.example.yetti.toneplayer.model.Playlist;
-
 public final class DBToneContract {
     public static final  int    DATABASE_VERSION   = 1;
     public static final  String DATABASE_NAME      = "tone.db";
@@ -28,7 +26,7 @@ public final class DBToneContract {
                         SongEntry.COLUMN_NAME_SONG_TITLE + TEXT_TYPE + COMMA_SEP +
                         SongEntry.COLUMN_NAME_SONG_ARTIST+ TEXT_TYPE + COMMA_SEP +
                         SongEntry.COLUMN_NAME_SONG_WEIGHT + INTEGER_TYPE + COMMA_SEP+
-                        SongEntry.COLUMN_NAME_SONG_PLAYLIST + TEXT_TYPE+" )";
+                        SongEntry.COLUMN_NAME_SONG_PLAYLIST + INTEGER_TYPE+" )";
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + SongEntry.TABLE_NAME;
     }

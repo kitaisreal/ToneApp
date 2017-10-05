@@ -1,16 +1,5 @@
 package com.example.yetti.toneplayer.network;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-
-//TODO REQUEST getNextSong getRecommendations
 public class Request {
     private String url;
     private String method;
@@ -21,10 +10,12 @@ public class Request {
         this.method = method;
         this.body = body;
     }
-    public Request(String url, String method){
-        this.url=url;
-        this.method=method;
+
+    public Request(String url, String method) {
+        this.url = url;
+        this.method = method;
     }
+
     public String getUrl() {
         return url;
     }

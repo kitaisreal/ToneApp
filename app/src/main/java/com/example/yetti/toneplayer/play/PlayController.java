@@ -17,8 +17,19 @@ public class PlayController {
             case TONE:
                 break;
         };
-        return new Song(1,"ASD","RRE",4,"ASD");
+        return new Song(1,"ASD","RRE",4,5);
     }
+    public Song getPrevSong(){
+        switch (playMode){
+            case NORMAL:
+                break;
+            case SHUFFLE:
+                break;
+            case TONE:
+                break;
+        };
+        return new Song(1,"ASD","RRE",4,5);
+    };
     public PlayMode getPlayMode() {
         return playMode;
     }

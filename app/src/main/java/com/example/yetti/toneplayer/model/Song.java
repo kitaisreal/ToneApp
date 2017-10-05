@@ -1,7 +1,6 @@
 package com.example.yetti.toneplayer.model;
 
 
-import android.content.ContentResolver;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,14 +9,14 @@ public class Song implements Parcelable{
     private String song_artist;
     private String song_name;
     private int song_weight;
-    private String song_playlist;
+    private long song_playlist_id;
 
-    public Song(long song_id, String song_artist, String song_name, int song_weight, String song_playlist) {
+    public Song(long song_id, String song_artist, String song_name, int song_weight, long song_playlist_id) {
         this.song_id = song_id;
         this.song_artist = song_artist;
         this.song_name = song_name;
         this.song_weight = song_weight;
-        this.song_playlist=song_playlist;
+        this.song_playlist_id=song_playlist_id;
     }
     public Song(){
 
@@ -27,7 +26,7 @@ public class Song implements Parcelable{
         song_artist = in.readString();
         song_name = in.readString();
         song_weight = in.readInt();
-        song_playlist=in.readString();
+        song_playlist_id=in.readLong();
     }
     public static final Creator<Song> CREATOR = new Creator<Song>() {
         @Override
@@ -84,14 +83,14 @@ public class Song implements Parcelable{
         dest.writeString(song_name);
         dest.writeString(song_artist);
         dest.writeInt(song_weight);
-        dest.writeString(song_playlist);
+        dest.writeLong(song_playlist_id);
     }
 
-    public String getSong_playlist() {
-        return song_playlist;
+    public long getSong_playlist() {
+        return song_playlist_id;
     }
 
-    public void setSong_playlist(String song_playlist) {
-        this.song_playlist = song_playlist;
+    public void setSong_playlist(long song_playlist) {
+        this.song_playlist_id = song_playlist;
     }
 }

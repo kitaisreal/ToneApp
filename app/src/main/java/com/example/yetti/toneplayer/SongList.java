@@ -11,7 +11,6 @@ import android.widget.ListView;
 import android.widget.MediaController;
 
 import com.example.yetti.toneplayer.adapter.Adapter;
-import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.controller.MusicController;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.service.SongService;
@@ -20,30 +19,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SongList extends Fragment implements MediaController.MediaPlayerControl {
-    //TODO CHANGE FRAGMENT
     List<Song> list;
     SongService.myBinder songServiceBinder;
     MusicController mc;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        list=new ArrayList<>();
+        list = new ArrayList<>();
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.song_list,null);
+        View v = inflater.inflate(R.layout.song_list, null);
 
-        ListView listView= (ListView) v.findViewById(R.id.listSongs);
+        ListView listView = (ListView) v.findViewById(R.id.listSongs);
 
         Bundle bundle = this.getArguments();
         if (bundle != null) {
             System.out.println(bundle.size());
-            songServiceBinder= (SongService.myBinder) bundle.getBinder("songServiceBinder");
+            songServiceBinder = (SongService.myBinder) bundle.getBinder("songServiceBinder");
             System.out.println(songServiceBinder);
             list = bundle.getParcelableArrayList("songs");
         }
-        Adapter adapter = new Adapter(getActivity(),list);
+        Adapter adapter = new Adapter(getActivity(), list);
         mc = new MusicController(getActivity());
         mc.setMediaPlayer(this);
         mc.setAnchorView(v.findViewById(R.id.mediaController));
@@ -54,7 +54,7 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
             public void onClick(View v) {
                 System.out.println("LETS GO NEXT");
             }
-        },new View.OnClickListener() {
+        }, new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -72,23 +72,24 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
         });
         return v;
     }
+
     @Override
     public void start() {
-        if (songServiceBinder!=null) {
+        if (songServiceBinder != null) {
             songServiceBinder.getService().unpausePlayer();
         }
     }
 
     @Override
     public void pause() {
-        if (songServiceBinder!=null) {
+        if (songServiceBinder != null) {
             songServiceBinder.getService().pausePlayer();
         }
     }
 
     @Override
     public int getDuration() {
-        if (songServiceBinder!=null) {
+        if (songServiceBinder != null) {
             return songServiceBinder.getService().getDuration();
         }
         return 0;
@@ -96,7 +97,7 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
 
     @Override
     public int getCurrentPosition() {
-        if (songServiceBinder!=null) {
+        if (songServiceBinder != null) {
             return songServiceBinder.getService().getPosition();
         }
         return 0;
@@ -104,14 +105,14 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
 
     @Override
     public void seekTo(int pos) {
-        if (songServiceBinder!=null) {
+        if (songServiceBinder != null) {
             songServiceBinder.getService().seek(pos);
         }
     }
 
     @Override
     public boolean isPlaying() {
-        if (songServiceBinder!=null) {
+        if (songServiceBinder != null) {
             return songServiceBinder.getService().isPlaying();
         }
         return false;

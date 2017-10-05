@@ -29,8 +29,9 @@ public class SongService extends Service implements
     MediaPlayer mediaPlayer;
     List<Song> songList;
     private final IBinder myBinder = new myBinder();
-    private static final int NOTIFY_ID=1;
-    int currentSongPosition=0;
+    private static final int NOTIFY_ID = 1;
+    int currentSongPosition = 0;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -42,10 +43,12 @@ public class SongService extends Service implements
         mediaPlayer.setOnCompletionListener(this);
         mediaPlayer.setOnErrorListener(this);
     }
-    public void test(){
+
+    public void test() {
         System.out.println("TEST SERVICE");
     }
-    public void playSong(long id){
+
+    public void playSong(long id) {
         mediaPlayer.reset();
         Uri trackUri = ContentUris.withAppendedId(
                 android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
@@ -57,16 +60,19 @@ public class SongService extends Service implements
             e.printStackTrace();
         }
     }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(LOG_TAG, "onStartCommand");
         return super.onStartCommand(intent, flags, startId);
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "onDestroy");
     }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -85,37 +91,45 @@ public class SongService extends Service implements
         super.onRebind(intent);
         Log.d(LOG_TAG, "MyService onRebind");
     }
-    public int getPosition(){
+
+    public int getPosition() {
         return mediaPlayer.getCurrentPosition();
     }
-    public void playPrev(){
+
+    public void playPrev() {
 
     }
-    public void playNext(){
+
+    public void playNext() {
     }
-    public int getDuration(){
+
+    public int getDuration() {
         return mediaPlayer.getDuration();
     }
 
-    public boolean isPlaying(){
+    public boolean isPlaying() {
         return mediaPlayer.isPlaying();
     }
 
-    public void pausePlayer(){
+    public void pausePlayer() {
         mediaPlayer.pause();
     }
-    public void unpausePlayer(){
+
+    public void unpausePlayer() {
         mediaPlayer.start();
     }
-    public void seek(int posn){
+
+    public void seek(int posn) {
         mediaPlayer.seekTo(posn);
     }
-    public void go(){
+
+    public void go() {
         mediaPlayer.start();
     }
+
     @Override
     public void onCompletion(MediaPlayer mp) {
-        Log.d(LOG_TAG,"SONG PLAYED ALREADY");
+        Log.d(LOG_TAG, "SONG PLAYED ALREADY");
     }
 
     @Override
@@ -138,21 +152,23 @@ public class SongService extends Service implements
                 .setTicker("ZXC")
                 .setOngoing(true)
                 .setContentTitle("PLAYING")
-        .setContentText("ASD");
+                .setContentText("ASD");
         Notification not = builder.build();
 
         startForeground(NOTIFY_ID, not);
     }
 
-    public class myBinder extends Binder{
-        public SongService getService(){
+    public class myBinder extends Binder {
+        public SongService getService() {
             return SongService.this;
         }
     }
-    public void testBind(){
-        Log.d(LOG_TAG,"TEST BINDER");
+
+    public void testBind() {
+        Log.d(LOG_TAG, "TEST BINDER");
     }
-    public void setSongList(List<Song> songList){
-        this.songList=songList;
+
+    public void setSongList(List<Song> songList) {
+        this.songList = songList;
     }
 }
