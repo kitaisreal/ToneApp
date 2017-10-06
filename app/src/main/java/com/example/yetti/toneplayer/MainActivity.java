@@ -59,7 +59,6 @@ public class MainActivity extends AppCompatActivity {
         jsonHandler = new JsonHandler();
         list = new ArrayList<>();
         intent = new Intent(this, SongService.class);
-        this.deleteDatabase(DBToneContract.DATABASE_NAME);
         DatabaseManager.initializeInstance(new DBToneHelper(this));
         final SongServiceImpl songService = new SongServiceImpl();
         if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {

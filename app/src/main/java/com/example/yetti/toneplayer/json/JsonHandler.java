@@ -75,6 +75,8 @@ public class JsonHandler implements IJsonHandler{
             jsonObject.put("song_name", song.getSong_name());
             jsonObject.put("song_artist",song.getSong_artist());
             jsonObject.put("song_weight",song.getSong_weight());
+            jsonObject.put("song_playlist",song.getSong_playlist());
+            jsonObject.put("song_id",song.getSong_id());
             return jsonObject;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -84,8 +86,11 @@ public class JsonHandler implements IJsonHandler{
     private Song ConvertJsonToSong(JSONObject song){
         Song responce = new Song();
         try {
-            responce.setSong_artist(String.valueOf(song.get("artist_name")));
+            responce.setSong_artist(String.valueOf(song.get("song_artist")));
             responce.setSong_name(String.valueOf(song.get("song_name")));
+            responce.setSong_id((Integer) song.get("song_id"));
+            responce.setSong_playlist((Integer) song.get("song_playlist"));
+            responce.setSong_weight((Integer) song.get("song_weight"));
             return responce;
         } catch (JSONException e) {
             e.printStackTrace();
