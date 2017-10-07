@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ISongService {
-    void addSongs(final ArrayList<Song> songs, final ICallbackResult<Boolean> iResultCallback);
-    void updateSongs(List<Song> songs,final ICallbackResult<Boolean> iResultCallback);
-    void deleteSong(final Song song, final ICallbackResult<Boolean> iResultCallback);
-    void updateSong(final Song song, final ICallbackResult<Boolean> iResultCallback);
-    void getSongByID(final Long id, final ICallbackResult<Song> iResultCallback);
-    void getAllSongs(final ICallbackResult<List<Song>> iResultCallback);
-    void getSongsByPlaylist(final int SongPlaylist, final ICallbackResult<List<Song>> iResultCallback);
+    void addSongs(final List<Song> songs, final ICallbackResult<Boolean> iCallbackResult);
+    void updateSongs(final List<Song> songs,final ICallbackResult<Boolean> iCallbackResult);
+    void deleteSongs(final List<Song> songs, final ICallbackResult<Boolean> iCallbackResult);
+    void deleteSong(final Song song, final ICallbackResult<Boolean> iCallbackResult);
+    void updateSong(final Song song, final ICallbackResult<Boolean> iCallbackResult);
+    void getSongByID(final Long id, final ICallbackResult<Song> iCallbackResult);
+    void getAllSongs(final ICallbackResult<List<Song>> iCallbackResult);
+    void getSongsByPlaylist(final int SongPlaylist, final ICallbackResult<List<Song>> iCallbackResult);
 }

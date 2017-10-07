@@ -17,7 +17,7 @@ import java.util.Objects;
 
 public class SongServiceImpl implements ISongService {
     @Override
-    public void addSongs(final ArrayList<Song> songs, final ICallbackResult<Boolean> iResultCallback) {
+    public void addSongs(final List<Song> songs, final ICallbackResult<Boolean> iCallbackResult) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
@@ -44,24 +44,25 @@ public class SongServiceImpl implements ISongService {
                     return true;
                 }
                 catch (Exception e){
-                    if (iResultCallback!=null) {
+                    e.printStackTrace();
+                    if (iCallbackResult!=null) {
                         final Exception addSongsEx = new Exception("DB ADD SONGS EXCEPTION");
-                        iResultCallback.onFail(addSongsEx);
+                        iCallbackResult.onFail(addSongsEx);
                     }
                     return null;
                 }
             }
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                if (iResultCallback!=null){
-                    iResultCallback.onSuccess(aBoolean);
+                if (iCallbackResult!=null){
+                    iCallbackResult.onSuccess(aBoolean);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void updateSongs(final List<Song> songs,final ICallbackResult<Boolean> iResultCallback) {
+    public void updateSongs(final List<Song> songs,final ICallbackResult<Boolean> iCallbackResult) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
@@ -81,55 +82,102 @@ public class SongServiceImpl implements ISongService {
                     return true;
                 }
                 catch (Exception e){
-                    if (iResultCallback!=null) {
+                    if (iCallbackResult!=null) {
                         final Exception updateSong= new Exception("DB UPDATE SONGS EXCEPTION");
-                        iResultCallback.onFail(updateSong);
+                        iCallbackResult.onFail(updateSong);
                     }
                     return null;
                 }
             }
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                if (iResultCallback!=null){
-                    iResultCallback.onSuccess(aBoolean);
+                if (iCallbackResult!=null){
+                    iCallbackResult.onSuccess(aBoolean);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void deleteSong(final Song song, final ICallbackResult<Boolean> iResultCallback) {
+    public void deleteSongs(final List<Song> songs, final ICallbackResult<Boolean> iCallbackResult) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                try{
+                    SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
+                    for (Song song : songs) {
+                        long id = song.getSong_id();
+                        Cursor c = sqLiteDatabase.rawQuery("select * from " + DBToneContract.SongEntry.TABLE_NAME + " where " + DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID
+                                + "='" + id + "'", null);
+                        if (c.moveToFirst()) {
+                            sqLiteDatabase.delete(DBToneContract.SongEntry.TABLE_NAME, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + " = ?",
+                                    new String[]{Long.toString(id)});
+                            c.close();
+                        } else{
+                            c.close();
+                        }
+                    }
+                    sqLiteDatabase.close();
+                    DatabaseManager.getInstance().closeDatabase();
+                    return true;
+                }
+                catch (Exception e){
+                    if (iCallbackResult!=null) {
+                        final Exception deleteSongEx = new Exception("DB DELETE SONGS EXCEPTION");
+                        iCallbackResult.onFail(deleteSongEx);
+                    }
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                if (iCallbackResult!=null){
+                    iCallbackResult.onSuccess(aBoolean);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void deleteSong(final Song song, final ICallbackResult<Boolean> iCallbackResult) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
                 try{
                     SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
                     long id = song.getSong_id();
-                    sqLiteDatabase.delete(DBToneContract.SongEntry.TABLE_NAME, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + " = ?",
-                            new String[]{Long.toString(id)});
+                    Cursor c = sqLiteDatabase.rawQuery("select * from " + DBToneContract.SongEntry.TABLE_NAME + " where " + DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID
+                            + "='" + id + "'", null);
+                    if (c.moveToFirst()) {
+                        c.close();
+                    } else{
+                        sqLiteDatabase.delete(DBToneContract.SongEntry.TABLE_NAME, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + " = ?",
+                                new String[]{Long.toString(id)});
+                        c.close();
+                    }
                     sqLiteDatabase.close();
                     DatabaseManager.getInstance().closeDatabase();
                     return true;
                 }
                 catch (Exception e){
-                    if (iResultCallback!=null) {
+                    if (iCallbackResult!=null) {
                         final Exception deleteSongEx = new Exception("DB DELETE SONG EXCEPTION");
-                        iResultCallback.onFail(deleteSongEx);
+                        iCallbackResult.onFail(deleteSongEx);
                     }
                     return null;
                 }
             }
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                if (iResultCallback!=null){
-                    iResultCallback.onSuccess(aBoolean);
+                if (iCallbackResult!=null){
+                    iCallbackResult.onSuccess(aBoolean);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void updateSong(final Song song, final ICallbackResult<Boolean> iResultCallback) {
+    public void updateSong(final Song song, final ICallbackResult<Boolean> iCallbackResult) {
         new AsyncTask<Void, Void, Boolean>() {
             @Override
             protected Boolean doInBackground(Void... params) {
@@ -146,24 +194,24 @@ public class SongServiceImpl implements ISongService {
                     return true;
                 }
                 catch (Exception e){
-                    if (iResultCallback!=null) {
+                    if (iCallbackResult!=null) {
                         final Exception updateSong= new Exception("DB UPDATE SONG EXCEPTION");
-                        iResultCallback.onFail(updateSong);
+                        iCallbackResult.onFail(updateSong);
                     }
                     return null;
                 }
             }
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                if (iResultCallback!=null){
-                    iResultCallback.onSuccess(aBoolean);
+                if (iCallbackResult!=null){
+                    iCallbackResult.onSuccess(aBoolean);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void  getSongByID(final Long id, final ICallbackResult<Song> iResultCallback) {
+    public void  getSongByID(final Long id, final ICallbackResult<Song> iCallbackResult) {
         new AsyncTask<Void, Void, Song>() {
             @Override
             protected Song doInBackground(Void... params) {
@@ -188,21 +236,21 @@ public class SongServiceImpl implements ISongService {
                 }
                 catch (Exception e){
                     final Exception getSongByIdEx = new Exception("DB GET SONG BY ID EXCEPTION");
-                    iResultCallback.onFail(getSongByIdEx);
+                    iCallbackResult.onFail(getSongByIdEx);
                     return null;
                 }
                 return null;
             }
             @Override
             protected void onPostExecute(Song song){
-                if (iResultCallback!=null) {
-                    iResultCallback.onSuccess(song);
+                if (iCallbackResult!=null) {
+                    iCallbackResult.onSuccess(song);
                 }
             }
         }.execute();
     }
     @Override
-    public void getAllSongs(final ICallbackResult<List<Song>> iResultCallback) {
+    public void getAllSongs(final ICallbackResult<List<Song>> iCallbackResult) {
         new AsyncTask<Void, Void, List<Song>>() {
             @Override
             protected List<Song> doInBackground(Void... params) {
@@ -227,8 +275,8 @@ public class SongServiceImpl implements ISongService {
                 }
                 catch (Exception e){
                     final Exception getSongByIdEx = new Exception("DB GET SONGS EXCEPTION");
-                    if (iResultCallback!=null) {
-                        iResultCallback.onFail(getSongByIdEx);
+                    if (iCallbackResult!=null) {
+                        iCallbackResult.onFail(getSongByIdEx);
                     }
                     return null;
                 }
@@ -236,15 +284,15 @@ public class SongServiceImpl implements ISongService {
             }
             @Override
             protected void onPostExecute(List<Song> songs){
-                if (iResultCallback!=null) {
-                    iResultCallback.onSuccess(songs);
+                if (iCallbackResult!=null && songs!=null) {
+                    iCallbackResult.onSuccess(songs);
                 }
             }
         }.execute();
     }
 
     @Override
-    public void getSongsByPlaylist(final int SongPlaylist, final ICallbackResult<List<Song>> iResultCallback) {
+    public void getSongsByPlaylist(final int SongPlaylist, final ICallbackResult<List<Song>> iCallbackResult) {
         new AsyncTask<Void, Void, List<Song>>() {
             @Override
             protected List<Song> doInBackground(Void... params) {
@@ -270,8 +318,8 @@ public class SongServiceImpl implements ISongService {
                 }
                 catch (Exception e){
                     final Exception getSongByIdEx = new Exception("DB GET SONGS BY PLAYLIST EXCEPTION");
-                    if (iResultCallback!=null) {
-                        iResultCallback.onFail(getSongByIdEx);
+                    if (iCallbackResult!=null) {
+                        iCallbackResult.onFail(getSongByIdEx);
                     }
                     return null;
                 }
@@ -279,8 +327,8 @@ public class SongServiceImpl implements ISongService {
             }
             @Override
             protected void onPostExecute(List<Song> songs){
-                if (iResultCallback!=null) {
-                    iResultCallback.onSuccess(songs);
+                if (iCallbackResult!=null) {
+                    iCallbackResult.onSuccess(songs);
                 }
             }
         }.execute();

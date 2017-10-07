@@ -1,11 +1,13 @@
 package com.example.yetti.toneplayer.network;
 
+import android.net.http.HttpResponseCache;
 import android.os.AsyncTask;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -33,7 +35,6 @@ public class HttpClient {
 
             @Override
             protected void onPostExecute(String s) {
-                System.out.println("POST EXECUTE");
                 if (iCallbackResult != null && s != null) {
                     iCallbackResult.onSuccess(s);
                 }
@@ -50,15 +51,15 @@ public class HttpClient {
             httpURLConnection = (HttpURLConnection) url.openConnection();
             setConnectionProperties(httpURLConnection, request);
             InputStream in = new BufferedInputStream(httpURLConnection.getInputStream());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            StringBuilder total = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                total.append(line).append('\n');
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
             }
-            return total.toString();
+            return result.toString("UTF-8");
         } catch (Exception e) {
-
+            e.printStackTrace();
         } finally {
             if (httpURLConnection != null) {
                 httpURLConnection.disconnect();
@@ -68,11 +69,12 @@ public class HttpClient {
     }
 
     private void setConnectionProperties(HttpURLConnection urlConnection, Request request) {
-        System.out.println("SET CONNECTION PROPERTIES");
         try {
             urlConnection.setRequestMethod(request.getMethod());
             urlConnection.setRequestProperty("Content-Type", "application/json");
             if (request.getBody() != null) {
+                urlConnection.setDoOutput(true);
+                urlConnection.setDoInput(true);
                 final OutputStream stream;
                 stream = urlConnection.getOutputStream();
                 String requestBody = request.getBody();
