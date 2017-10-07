@@ -11,7 +11,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -51,7 +50,7 @@ public class JsonHandlerUnitTest {
             public void onSuccess(List<Song> songs) {
                 assertEquals(mTestSongList.size(),songs.size());
                 for (int i = 0; i< mTestSongList.size(); i++) {
-                    assertEquals(TestModule.comparator.compare(mTestSongList.get(i), songs.get(i)),1);
+                    assertEquals(TestModule.songComparator.compare(mTestSongList.get(i), songs.get(i)),1);
                 }
             }
 

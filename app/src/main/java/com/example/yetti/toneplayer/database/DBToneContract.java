@@ -38,7 +38,7 @@ public final class DBToneContract {
                 "CREATE TABLE " + PlaylistEntry.TABLE_NAME + " (" +
                         PlaylistEntry._ID + " INTEGER PRIMARY KEY," +
                         PlaylistEntry.COLUMN_NAME_ENTRY_ID + TEXT_TYPE + COMMA_SEP +
-                        PlaylistEntry.COLUMN_NAME_PLAYLIST_NAME + TEXT_TYPE + COMMA_SEP +" )";
+                        PlaylistEntry.COLUMN_NAME_PLAYLIST_NAME + TEXT_TYPE +" )";
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + PlaylistEntry.TABLE_NAME;
     }

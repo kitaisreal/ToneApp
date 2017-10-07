@@ -2,6 +2,7 @@ package com.example.yetti.toneplayer;
 
 import android.app.Fragment;
 import android.os.Bundle;
+import android.os.HandlerThread;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +34,6 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.song_list, null);
-
         ListView listView = (ListView) v.findViewById(R.id.listSongs);
 
         Bundle bundle = this.getArguments();
