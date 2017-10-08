@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/all_songs"
+            android:title="@string/all_songs" />
+        <item
+            android:id="@+id/songs_artists"
+            android:title="@string/artists" />
+        <item
+            android:id="@+id/songs_playlists"
+            android:title="@string/playlists" />
+        <item
+            android:id="@+id/about"
+            android:title="@string/about" />
+    </group>
+</menu>

@@ -1,3 +1,11 @@
 <resources>
-    <string name="app_name">TonePlayer</string>
+    <string name="app_name">Tone Player</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <string name="all_songs">All songs</string>
+    <string name="artists">Artists</string>
+    <string name="playlists">Playlists</string>
+    <string name="about">About</string>
+    <string name="tone_player">Tone Player</string>
 </resources>

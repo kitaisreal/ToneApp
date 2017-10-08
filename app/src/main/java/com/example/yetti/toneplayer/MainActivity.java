@@ -4,25 +4,37 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
-import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.ISongService;
@@ -34,10 +46,11 @@ import com.example.yetti.toneplayer.network.Request;
 import com.example.yetti.toneplayer.service.SongService;
 import com.example.yetti.toneplayer.service.SongServiceManager;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     //TODO ADD NAVIGATION DRAWLER PLAYLIST FRAGMENT (ON REQUEST ADD) CONTROLS
     ArrayList<Song> list;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -49,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     public SongService.myBinder songServiceBinder;
     HttpClient httpClient;
     JsonHandler jsonHandler;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +72,16 @@ public class MainActivity extends AppCompatActivity {
         httpClient = new HttpClient();
         jsonHandler = new JsonHandler();
         list = new ArrayList<>();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
         intent = new Intent(this, SongService.class);
         DatabaseManager.initializeInstance(new DBToneHelper(this));
         final SongServiceImpl songService = new SongServiceImpl();
@@ -68,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                     songService.addSongs((ArrayList<Song>) songs, new ICallbackResult<Boolean>() {
                         @Override
                         public void onSuccess(Boolean aBoolean) {
-                            test();
                             bindService(intent, sConn, BIND_AUTO_CREATE);
                         }
 
@@ -85,47 +108,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
         }
-        ;
-
-    }
-
-    private void test() {
-        jsonHandler.ConvertSongsToJson(list, new ICallbackResult<String>() {
-            @Override
-            public void onSuccess(String s) {
-                System.out.println("S TO POST " + s);
-                httpClient.createRequest(new Request("http://192.168.100.3:8080/api/testPostSongs", "POST", s), new ICallbackResult<String>() {
-                    @Override
-                    public void onSuccess(String s) {
-                        System.out.println("RESPONCE FROM POST " + s);
-                    }
-
-                    @Override
-                    public void onFail(Exception e) {
-
-                    }
-                });
-            }
-
-            @Override
-            public void onFail(Exception e) {
-
-            }
-        });
-    }
-
-    private void addSongsToDB(ISongService songService) {
-        songService.addSongs(list, new ICallbackResult<Boolean>() {
-            @Override
-            public void onSuccess(Boolean aBoolean) {
-                System.out.println("SONGS ADDED");
-            }
-
-            @Override
-            public void onFail(Exception e) {
-                System.out.println("SONGS DONT ADDED");
-            }
-        });
     }
 
     private ServiceConnection sConn = new ServiceConnection() {
@@ -228,20 +210,43 @@ public class MainActivity extends AppCompatActivity {
             protected List<Song> doInBackground(Void... params) {
                 try {
                     ContentResolver musicResolver = getContentResolver();
-                    Uri musicUri = android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+                    Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
                     Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);
                     if (musicCursor != null && musicCursor.moveToFirst()) {
                         int titleColumn = musicCursor.getColumnIndex
-                                (android.provider.MediaStore.Audio.Media.TITLE);
+                                (MediaStore.Audio.Media.TITLE);
                         int idColumn = musicCursor.getColumnIndex
-                                (android.provider.MediaStore.Audio.Media._ID);
+                                (MediaStore.Audio.Media._ID);
                         int artistColumn = musicCursor.getColumnIndex
-                                (android.provider.MediaStore.Audio.Media.ARTIST);
+                                (MediaStore.Audio.Media.ARTIST);
+                        int albumId = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
+                        int albumArt = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
+                        int songAlbum = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
+                        int songDuration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
                         do {
                             long thisId = musicCursor.getLong(idColumn);
                             String thisTitle = musicCursor.getString(titleColumn);
                             String thisArtist = musicCursor.getString(artistColumn);
+                            long thisAlbumId = musicCursor.getLong(albumId);
+                            String thisALbum = musicCursor.getString(songAlbum);
+                            long thisSongDuration = musicCursor.getLong(songDuration);
+                            System.out.println("SONG");
+                            System.out.println("THIS ID " + thisId + " THIS TITLE " + thisTitle + " THIS ARTIST " + thisArtist + " THIS ALBUM " + thisALbum +
+                                    " THIS ALBUM ID " + thisAlbumId + " THIS SONG DURATION " + thisSongDuration);
                             list.add(new Song(thisId, thisArtist, thisTitle, 0, -1));
+                            /*
+                            Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
+                            Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri,musicCursor.getLong(albumId));
+                            Bitmap bitmap = null;
+                            try {
+                                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), albumArtUri);
+                                bitmap = Bitmap.createScaledBitmap(bitmap,30,30,true);
+                            } catch (FileNotFoundException e){
+                                e.printStackTrace();
+                                continue;
+                            };
+                            System.out.println("BITMAP " + bitmap.getHeight());
+                            */
                         }
                         while (musicCursor.moveToNext());
                     }
@@ -262,5 +267,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }.execute();
+    }
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.all_songs) {
+
+        } else if (id == R.id.songs_artists) {
+
+        } else if (id == R.id.songs_playlists) {
+
+        } else if (id == R.id.about) {
+
+        }
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
     }
 }
