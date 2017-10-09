@@ -4,12 +4,12 @@ import android.graphics.Bitmap;
 import android.os.Handler;
 
 
-public class ImageRunnable implements Runnable {
+public class ImageNetworkRunnable implements Runnable {
     private Handler mHandler;
     private IImageDownloadListener mListener;
     private ImageProcessingImpl mImageProcessing;
     private String mUrlToDownload;
-    public ImageRunnable(Handler mainHandler, IImageDownloadListener myListener, ImageProcessingImpl imageProcessing, String UrlToDownload) {
+    public ImageNetworkRunnable(Handler mainHandler, IImageDownloadListener myListener, ImageProcessingImpl imageProcessing, String UrlToDownload) {
         this.mHandler = mainHandler;
         this.mListener = myListener;
         this.mImageProcessing = imageProcessing;

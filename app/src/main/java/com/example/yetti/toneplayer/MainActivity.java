@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     JsonHandler jsonHandler;
     private DrawerLayout mDrawerLayout;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,7 +221,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         int artistColumn = musicCursor.getColumnIndex
                                 (MediaStore.Audio.Media.ARTIST);
                         int albumId = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
-                        int albumArt = musicCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART);
                         int songAlbum = musicCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM);
                         int songDuration = musicCursor.getColumnIndex(MediaStore.Audio.Media.DURATION);
                         do {
@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             System.out.println("SONG");
                             System.out.println("THIS ID " + thisId + " THIS TITLE " + thisTitle + " THIS ARTIST " + thisArtist + " THIS ALBUM " + thisALbum +
                                     " THIS ALBUM ID " + thisAlbumId + " THIS SONG DURATION " + thisSongDuration);
-                            list.add(new Song(thisId, thisArtist, thisTitle, 0, -1));
+                            list.add(new Song(thisId, thisArtist, thisTitle,thisALbum,thisAlbumId,0, -1,0,thisSongDuration));
                             /*
                             Uri sArtworkUri = Uri.parse("content://media/external/audio/albumart");
                             Uri albumArtUri = ContentUris.withAppendedId(sArtworkUri,musicCursor.getLong(albumId));

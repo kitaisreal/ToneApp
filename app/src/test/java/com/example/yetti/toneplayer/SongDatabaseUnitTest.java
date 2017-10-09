@@ -56,9 +56,12 @@ public class SongDatabaseUnitTest {
         songService.getAllSongs(new ICallbackResult<List<Song>>() {
             @Override
             public void onSuccess(List<Song> songs) {
+                System.out.println("ADDED SONGS");
+                printList(songs);
+                System.out.println("LIST TO ADD");
+                printList(mTestSongList);
                 assertEquals(mTestSongList.size(), songs.size());
                 for (int i = 0; i < mTestSongList.size(); i++) {
-                    System.out.println(mTestSongList.get(i).getSong_name() + " " + mTestSongList.get(i).getSong_artist() + " ");
                     assertEquals(TestModule.songComparator.compare(mTestSongList.get(i), songs.get(i)), 1);
                 }
             }
@@ -106,6 +109,7 @@ public class SongDatabaseUnitTest {
                     @Override
                     public void onSuccess(Boolean aBoolean) {
                         songService.getAllSongs(testICallBackResult);
+
                     }
 
                     @Override
@@ -131,7 +135,7 @@ public class SongDatabaseUnitTest {
     }
 
     private Song cloneSongForUpdateTest(Song song, String testSongArtist) {
-        return new Song(song.getSong_id(), testSongArtist, song.getSong_name(), song.getSong_weight(), song.getSong_playlist());
+        return new Song(song.getSong_id(), testSongArtist, song.getSong_name(),song.getSong_album(), song.getSong_album_id(),song.getSong_weight(), song.getSong_playlist(),song.getSong_favourite(),song.getSong_duration());
     }
 
     @Test

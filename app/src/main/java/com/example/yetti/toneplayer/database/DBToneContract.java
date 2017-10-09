@@ -17,16 +17,24 @@ public final class DBToneContract {
         public static final String COLUMN_NAME_ENTRY_ID = "song_id";
         public static final String COLUMN_NAME_SONG_TITLE = "song_title";
         public static final String COLUMN_NAME_SONG_ARTIST="song_artist";
+        public static final String COLUMN_NAME_SONG_ALBUM="song_album";
+        public static final String COLUMN_NAME_SONG_ALBUM_ID="song_album_id";
         public static final String COLUMN_NAME_SONG_WEIGHT = "song_weight";
         public static final String COLUMN_NAME_SONG_PLAYLIST="song_playlist";
+        public static final String COLUMN_NAME_SONG_FAVOURITE="song_favourite";
+        public static final String COLUMN_NAME_SONG_DURATION="song_duration";
         public static final String SQL_CREATE_ENTRIES =
                 "CREATE TABLE " + SongEntry.TABLE_NAME + " (" +
                         SongEntry._ID + " INTEGER PRIMARY KEY," +
                         SongEntry.COLUMN_NAME_ENTRY_ID + TEXT_TYPE + COMMA_SEP +
                         SongEntry.COLUMN_NAME_SONG_TITLE + TEXT_TYPE + COMMA_SEP +
                         SongEntry.COLUMN_NAME_SONG_ARTIST+ TEXT_TYPE + COMMA_SEP +
+                        SongEntry.COLUMN_NAME_SONG_ALBUM+ TEXT_TYPE + COMMA_SEP +
+                        SongEntry.COLUMN_NAME_SONG_ALBUM_ID+ INTEGER_TYPE + COMMA_SEP +
                         SongEntry.COLUMN_NAME_SONG_WEIGHT + INTEGER_TYPE + COMMA_SEP+
-                        SongEntry.COLUMN_NAME_SONG_PLAYLIST + INTEGER_TYPE+" )";
+                        SongEntry.COLUMN_NAME_SONG_PLAYLIST+ INTEGER_TYPE + COMMA_SEP +
+                        SongEntry.COLUMN_NAME_SONG_FAVOURITE + INTEGER_TYPE+COMMA_SEP+
+                        SongEntry.COLUMN_NAME_SONG_DURATION+ INTEGER_TYPE +" )";
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + SongEntry.TABLE_NAME;
     }

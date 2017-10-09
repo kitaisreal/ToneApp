@@ -2,12 +2,20 @@
 package com.example.yetti.toneplayer.imageLoader;
 
 
+import android.content.ContentUris;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.threadmanager.ThreadsManager;
+
+import java.io.IOException;
+import java.net.URI;
 
 //TODO ADD FILE CACHE
 public class ImageLoader {
@@ -16,7 +24,20 @@ public class ImageLoader {
     private final ImageProcessingImpl mImageProcessing;
     private ImageMemoryCache mImageMemoryCache;
     private final Object mLockMemoryCacheObject;
-    public ImageLoader(){
+    private static volatile ImageLoader sInstance;
+    public static ImageLoader getInstance() {
+        ImageLoader localInstance = sInstance;
+        if (localInstance == null) {
+            synchronized (ThreadsManager.class) {
+                localInstance = sInstance;
+                if (localInstance == null) {
+                    sInstance = localInstance = new ImageLoader();
+                }
+            }
+        }
+        return localInstance;
+    }
+    private ImageLoader(){
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory()/1024);
         final int cacheSize = maxMemory/8;
         mLockMemoryCacheObject = new Object();
@@ -25,7 +46,7 @@ public class ImageLoader {
         mThreadsManager = ThreadsManager.getInstance();
         mImageProcessing = new ImageProcessingImpl();
     }
-    public void myDownloadImageTask(final ImageView imageView, final String urlToDownload){
+    public void displayImageByUrl(final ImageView imageView, final String urlToDownload){
         IImageDownloadListener listener = new IImageDownloadListener() {
             @Override
             public void onImageDownload(Bitmap image) {
@@ -48,6 +69,33 @@ public class ImageLoader {
             System.out.println("GET FROM CACHE");
             return;
         }
-        mThreadsManager.getExecutorImageLoaderTasks().execute(new ImageRunnable(mHandler,listener,mImageProcessing,urlToDownload));
+        mThreadsManager.getExecutorImageLoaderTasks().execute(new ImageNetworkRunnable(mHandler,listener,mImageProcessing,urlToDownload));
+    }
+
+    public void displayImageByUri(final ImageView imageView, final Uri uri, Context context){
+        IImageDownloadListener listener = new IImageDownloadListener() {
+            @Override
+            public void onImageDownload(Bitmap image) {
+                synchronized (mLockMemoryCacheObject) {
+                    System.out.println("PUT IN CACHE");
+                    mImageMemoryCache.put(uri.toString(), image);
+                }
+                if (imageView!=null && image!=null) {
+                    System.out.println("STOP WORKING ON IMAGE");
+                    imageView.setImageBitmap(image);
+                }
+            }
+        };
+        Bitmap bitmapToDraw=null;
+        synchronized (mLockMemoryCacheObject) {
+            bitmapToDraw = mImageMemoryCache.get(uri.toString());
+        }
+        if (bitmapToDraw!=null){
+            imageView.setImageBitmap(bitmapToDraw);
+            System.out.println("GET FROM CACHE");
+            return;
+        }
+        mThreadsManager.getExecutorImageLoaderTasks().execute(new ImageUriRunnable(mHandler,listener,context.getContentResolver(),uri));
+
     }
 }

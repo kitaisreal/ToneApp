@@ -74,9 +74,13 @@ public class JsonHandler implements IJsonHandler{
         try {
             jsonObject.put("song_name", song.getSong_name());
             jsonObject.put("song_artist",song.getSong_artist());
+            jsonObject.put("song_album",song.getSong_album());
+            jsonObject.put("song_album_id",song.getSong_album_id());
             jsonObject.put("song_weight",song.getSong_weight());
             jsonObject.put("song_playlist",song.getSong_playlist());
             jsonObject.put("song_id",song.getSong_id());
+            jsonObject.put("song_favourite", song.getSong_favourite());
+            jsonObject.put("song_duration",song.getSong_duration());
             return jsonObject;
         } catch (JSONException e) {
             e.printStackTrace();
@@ -88,9 +92,13 @@ public class JsonHandler implements IJsonHandler{
         try {
             responce.setSong_artist(String.valueOf(song.get("song_artist")));
             responce.setSong_name(String.valueOf(song.get("song_name")));
+            responce.setSong_album(String.valueOf(song.get("song_album")));
+            responce.setSong_album_id((Integer)(song.get("song_album_id")));
             responce.setSong_id((Integer) song.get("song_id"));
             responce.setSong_playlist((Integer) song.get("song_playlist"));
             responce.setSong_weight((Integer) song.get("song_weight"));
+            responce.setSong_favourite((Integer) song.get("song_favourite"));
+            responce.setSong_duration((Integer) song.get("song_duration"));
             return responce;
         } catch (JSONException e) {
             e.printStackTrace();

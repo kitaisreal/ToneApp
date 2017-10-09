@@ -17,7 +17,7 @@ public class PlayController {
             case TONE:
                 break;
         };
-        return new Song(1,"ASD","RRE",4,5);
+        return null;
     }
     public Song getPrevSong(){
         switch (playMode){
@@ -28,7 +28,7 @@ public class PlayController {
             case TONE:
                 break;
         };
-        return new Song(1,"ASD","RRE",4,5);
+        return null;
     };
     public PlayMode getPlayMode() {
         return playMode;
