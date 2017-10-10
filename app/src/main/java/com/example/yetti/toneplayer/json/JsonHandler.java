@@ -13,92 +13,99 @@ import java.util.ArrayList;
 import java.util.List;
 
 //TODO LIST<SONG>-> JSON JSON 0> LIST<SONG> simpleJSON or gson
-public class JsonHandler implements IJsonHandler{
+//TODO ASYNC
+public class JsonHandler implements IJsonHandler {
+
     @Override
-    public void ConvertSongsToJson(final List<Song> songs, final ICallbackResult<String> iCallbackResult){
+    public void ConvertSongsToJson(final List<Song> pSongs, final ICallbackResult<String> pICallbackResult) {
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
                 try {
                     System.out.println("CONVERT SONGS TO JSON");
                     JSONArray jsonArray = new JSONArray();
-                    for (Song s: songs) {
+                    for (Song s : pSongs) {
                         jsonArray.put(ConvertSongToJson(s));
                     }
                     return jsonArray.toString();
                 } catch (Exception e) {
                     Exception exception = new Exception("CONVERT SONGS TO JSON EXCEPTION");
-                    if (iCallbackResult!=null){
-                        iCallbackResult.onFail(exception);
+                    if (pICallbackResult != null) {
+                        pICallbackResult.onError(exception);
                     }
                 }
                 return null;
             }
+
             @Override
             protected void onPostExecute(String songsJson) {
-                if (iCallbackResult!=null){
-                    iCallbackResult.onSuccess(songsJson);
+                if (pICallbackResult != null) {
+                    pICallbackResult.onSuccess(songsJson);
                 }
             }
         }.execute();
     }
+
     @Override
-    public void ConvertJsonToSongs(final String json, final ICallbackResult<List<Song>> iCallbackResult){
+    public void ConvertJsonToSongs(final String pJson, final ICallbackResult<List<Song>> pICallbackResult) {
         new AsyncTask<Void, Void, List<Song>>() {
+
             @Override
             protected List<Song> doInBackground(Void... params) {
                 try {
-                    List<Song> songs = new ArrayList<Song>();
-                    JSONArray reader = new JSONArray(json);
-                    for (int i=0;i<reader.length();i++){
+                    List<Song> songs = new ArrayList<>();
+                    JSONArray reader = new JSONArray(pJson);
+                    for (int i = 0; i < reader.length(); i++) {
                         songs.add(ConvertJsonToSong(reader.getJSONObject(i)));
                     }
                     return songs;
                 } catch (JSONException e) {
                     Exception exception = new Exception("CONVERT JSON TO SONGS EXCEPTION");
-                    iCallbackResult.onFail(exception);
+                    pICallbackResult.onError(exception);
                 }
                 return null;
             }
 
             @Override
             protected void onPostExecute(List<Song> songs) {
-                if (iCallbackResult!=null){
-                    iCallbackResult.onSuccess(songs);
+                if (pICallbackResult != null) {
+                    pICallbackResult.onSuccess(songs);
                 }
             }
         }.execute();
     }
-    private JSONObject ConvertSongToJson(Song song){
+
+    private JSONObject ConvertSongToJson(Song pSong) {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("song_name", song.getSong_name());
-            jsonObject.put("song_artist",song.getSong_artist());
-            jsonObject.put("song_album",song.getSong_album());
-            jsonObject.put("song_album_id",song.getSong_album_id());
-            jsonObject.put("song_weight",song.getSong_weight());
-            jsonObject.put("song_playlist",song.getSong_playlist());
-            jsonObject.put("song_id",song.getSong_id());
-            jsonObject.put("song_favourite", song.getSong_favourite());
-            jsonObject.put("song_duration",song.getSong_duration());
+            jsonObject.put("song_name", pSong.getSongName());
+            jsonObject.put("song_artist", pSong.getSongArtist());
+            jsonObject.put("song_album", pSong.getSongAlbum());
+            jsonObject.put("song_album_id", pSong.getSongAlbumId());
+            jsonObject.put("song_weight", pSong.getSongWeight());
+            jsonObject.put("song_playlist", pSong.getSongPlaylist());
+            jsonObject.put("song_id", pSong.getSongId());
+            jsonObject.put("song_favourite", pSong.getSongFavourite());
+            jsonObject.put("song_duration", pSong.getSongDuration());
             return jsonObject;
         } catch (JSONException e) {
             e.printStackTrace();
         }
         return new JSONObject();
     }
-    private Song ConvertJsonToSong(JSONObject song){
+
+    private Song ConvertJsonToSong(JSONObject song) {
         Song responce = new Song();
         try {
-            responce.setSong_artist(String.valueOf(song.get("song_artist")));
-            responce.setSong_name(String.valueOf(song.get("song_name")));
-            responce.setSong_album(String.valueOf(song.get("song_album")));
-            responce.setSong_album_id((Integer)(song.get("song_album_id")));
-            responce.setSong_id((Integer) song.get("song_id"));
-            responce.setSong_playlist((Integer) song.get("song_playlist"));
-            responce.setSong_weight((Integer) song.get("song_weight"));
-            responce.setSong_favourite((Integer) song.get("song_favourite"));
-            responce.setSong_duration((Integer) song.get("song_duration"));
+            responce.setSongArtist(String.valueOf(song.get("song_artist")));
+            responce.setSongName(String.valueOf(song.get("song_name")));
+            responce.setSongAlbum(String.valueOf(song.get("song_album")));
+            responce.setSongAlbumId((Integer) (song.get("song_album_id")));
+            responce.setSongId((Integer) song.get("song_id"));
+            responce.setSongPlaylist((Integer) song.get("song_playlist"));
+            responce.setSongWeight((Integer) song.get("song_weight"));
+            responce.setSongFavourite((Integer) song.get("song_favourite"));
+            responce.setSongDuration((Integer) song.get("song_duration"));
             return responce;
         } catch (JSONException e) {
             e.printStackTrace();

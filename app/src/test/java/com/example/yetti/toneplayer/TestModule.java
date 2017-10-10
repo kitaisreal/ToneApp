@@ -7,7 +7,6 @@ import com.example.yetti.toneplayer.model.Song;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -15,14 +14,14 @@ class TestModule {
     static Comparator<Song> songComparator = new Comparator<Song>() {
         @Override
         public int compare(Song o1, Song o2) {
-            assertEquals(o1.getSong_id(),o2.getSong_id());
-            assertEquals(o1.getSong_artist(),o2.getSong_artist());
-            assertEquals(o1.getSong_album_id(),o2.getSong_album_id());
-            assertEquals(o1.getSong_album(),o2.getSong_album());
-            assertEquals(o1.getSong_favourite(),o2.getSong_favourite());
-            assertEquals(o1.getSong_weight(),o2.getSong_weight());
-            assertEquals(o1.getSong_name(),o2.getSong_name());
-            assertEquals(o1.getSong_playlist(), o2.getSong_playlist());
+            assertEquals(o1.getSongId(),o2.getSongId());
+            assertEquals(o1.getSongArtist(),o2.getSongArtist());
+            assertEquals(o1.getSongAlbumId(),o2.getSongAlbumId());
+            assertEquals(o1.getSongAlbum(),o2.getSongAlbum());
+            assertEquals(o1.getSongFavourite(),o2.getSongFavourite());
+            assertEquals(o1.getSongWeight(),o2.getSongWeight());
+            assertEquals(o1.getSongName(),o2.getSongName());
+            assertEquals(o1.getSongPlaylist(), o2.getSongPlaylist());
             return 1;
         }
     };

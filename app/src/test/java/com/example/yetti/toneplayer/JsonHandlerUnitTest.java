@@ -39,7 +39,7 @@ public class JsonHandlerUnitTest {
                 responseJson[0] =s;
             }
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         };
@@ -55,7 +55,7 @@ public class JsonHandlerUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         });

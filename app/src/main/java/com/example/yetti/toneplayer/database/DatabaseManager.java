@@ -5,24 +5,23 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class DatabaseManager {
     private int mOpenCounter;
-
-    private static DatabaseManager instance;
+    private static DatabaseManager sInstance;
     private static DBToneHelper mDatabaseHelper;
     private SQLiteDatabase mDatabase;
 
     public static synchronized void initializeInstance(DBToneHelper helper) {
-        if (instance == null) {
-            instance = new DatabaseManager();
+        if (sInstance == null) {
+            sInstance = new DatabaseManager();
             mDatabaseHelper = helper;
         }
     }
 
     public static synchronized DatabaseManager getInstance() {
-        if (instance == null) {
+        if (sInstance == null) {
             throw new IllegalStateException(DatabaseManager.class.getSimpleName() +
                     " is not initialized");
         }
-        return instance;
+        return sInstance;
     }
 
     public synchronized SQLiteDatabase openDatabase() {

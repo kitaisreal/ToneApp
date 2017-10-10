@@ -48,7 +48,7 @@ public class SongDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         });
@@ -67,7 +67,7 @@ public class SongDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
 
             }
         });
@@ -85,11 +85,11 @@ public class SongDatabaseUnitTest {
                 List<Song> testSubList = mTestSongList.subList(secondIndex, mTestSongList.size());
                 System.out.println("TEST DELETE SONGS");
                 for (Song s : songs) {
-                    System.out.println(s.getSong_id() + " " + s.getSong_artist() + " " + s.getSong_name());
+                    System.out.println(s.getSongId() + " " + s.getSongArtist() + " " + s.getSongName());
                 }
                 System.out.println("OUR TEST SUBLIST");
                 for (Song s : testSubList) {
-                    System.out.println(s.getSong_id() + " " + s.getSong_artist() + " " + s.getSong_name());
+                    System.out.println(s.getSongId() + " " + s.getSongArtist() + " " + s.getSongName());
                 }
                 assertEquals(testSubList.size(), songs.size());
                 for (int i = 0; i < testSubList.size(); i++) {
@@ -98,7 +98,7 @@ public class SongDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         };
@@ -113,14 +113,14 @@ public class SongDatabaseUnitTest {
                     }
 
                     @Override
-                    public void onFail(Exception e) {
+                    public void onError(Exception e) {
 
                     }
                 });
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
 
             }
         });
@@ -130,12 +130,12 @@ public class SongDatabaseUnitTest {
 
     private void printList(List<Song> songs) {
         for (Song song : songs) {
-            System.out.println(song.getSong_id() + " " + song.getSong_artist());
+            System.out.println(song.getSongId() + " " + song.getSongArtist());
         }
     }
 
     private Song cloneSongForUpdateTest(Song song, String testSongArtist) {
-        return new Song(song.getSong_id(), testSongArtist, song.getSong_name(),song.getSong_album(), song.getSong_album_id(),song.getSong_weight(), song.getSong_playlist(),song.getSong_favourite(),song.getSong_duration());
+        return new Song(song.getSongId(), testSongArtist, song.getSongName(),song.getSongAlbum(), song.getSongAlbumId(),song.getSongWeight(), song.getSongPlaylist(),song.getSongFavourite(),song.getSongDuration());
     }
 
     @Test
@@ -156,7 +156,7 @@ public class SongDatabaseUnitTest {
             public void onSuccess(List<Song> songs) {
                 List<Song> getFromDbUpdateSongs = new ArrayList<>();
                 for (Song song : songs) {
-                    if (Objects.equals(song.getSong_artist(), testSongArtist)) {
+                    if (Objects.equals(song.getSongArtist(), testSongArtist)) {
                         getFromDbUpdateSongs.add(song);
                     }
                 }
@@ -168,7 +168,7 @@ public class SongDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         };
@@ -182,14 +182,14 @@ public class SongDatabaseUnitTest {
                     }
 
                     @Override
-                    public void onFail(Exception e) {
+                    public void onError(Exception e) {
                         e.printStackTrace();
                     }
                 });
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         });
@@ -205,7 +205,7 @@ public class SongDatabaseUnitTest {
         Playlist playlist = new Playlist(testPlayListId, "TESTPLAYLIST");
         final List<Song> ourTestSubList = mTestSongList.subList(firstIndex, secondIndex);
         for (Song song : ourTestSubList) {
-            song.setSong_playlist(playlist.getPlaylist_id());
+            song.setSongPlaylist(playlist.getPlaylist_id());
         }
         songService.addSongs(mTestSongList, new ICallbackResult<Boolean>() {
             @Override
@@ -220,14 +220,14 @@ public class SongDatabaseUnitTest {
                     }
 
                     @Override
-                    public void onFail(Exception e) {
+                    public void onError(Exception e) {
                         e.printStackTrace();
                     }
                 });
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         });

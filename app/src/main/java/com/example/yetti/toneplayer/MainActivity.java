@@ -4,15 +4,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -30,23 +27,18 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
-import com.example.yetti.toneplayer.database.ISongService;
 import com.example.yetti.toneplayer.database.impl.SongServiceImpl;
 import com.example.yetti.toneplayer.json.JsonHandler;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.network.HttpClient;
-import com.example.yetti.toneplayer.network.Request;
 import com.example.yetti.toneplayer.service.SongService;
 import com.example.yetti.toneplayer.service.SongServiceManager;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,14 +89,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
 
                         @Override
-                        public void onFail(Exception e) {
+                        public void onError(Exception e) {
 
                         }
                     });
                 }
 
                 @Override
-                public void onFail(Exception e) {
+                public void onError(Exception e) {
 
                 }
             });
@@ -254,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } catch (Exception e) {
                     if (callbackResult != null) {
                         final Exception exception = new Exception("GET SONG FROM DEVICE EXCEPTION");
-                        callbackResult.onFail(exception);
+                        callbackResult.onError(exception);
                     }
                 }
                 return null;

@@ -4,7 +4,7 @@ import android.graphics.Bitmap;
 import android.util.LruCache;
 
 //TODO SOFT AND STRONG CACHE REFERENCE
-public class ImageMemoryCache extends LruCache<String,Bitmap> {
+public class ImageMemoryCache extends LruCache<String, Bitmap> {
 
     public ImageMemoryCache(int maxSize) {
         super(maxSize);
@@ -12,6 +12,6 @@ public class ImageMemoryCache extends LruCache<String,Bitmap> {
 
     @Override
     protected int sizeOf(String key, Bitmap value) {
-        return value.getByteCount()/1024;
+        return value.getByteCount() / 1024;
     }
 }

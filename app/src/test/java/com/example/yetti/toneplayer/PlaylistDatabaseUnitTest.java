@@ -46,7 +46,7 @@ public class PlaylistDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         };
@@ -68,7 +68,7 @@ public class PlaylistDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         });
@@ -86,7 +86,7 @@ public class PlaylistDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         };
@@ -103,7 +103,7 @@ public class PlaylistDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         };
@@ -124,7 +124,7 @@ public class PlaylistDatabaseUnitTest {
             }
 
             @Override
-            public void onFail(Exception e) {
+            public void onError(Exception e) {
                 e.printStackTrace();
             }
         });

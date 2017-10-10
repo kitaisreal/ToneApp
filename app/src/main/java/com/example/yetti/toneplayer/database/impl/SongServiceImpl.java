@@ -10,7 +10,6 @@ import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.ISongService;
 import com.example.yetti.toneplayer.model.Song;
-import com.example.yetti.toneplayer.threadmanager.ThreadsManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,17 +25,17 @@ public class SongServiceImpl implements ISongService {
                     SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
                     for (Song song:songs){
                         ContentValues values = new ContentValues();
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID, song.getSong_id());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST, song.getSong_artist());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSong_name());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM, song.getSong_album());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM_ID, song.getSong_album_id());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSong_weight());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSong_playlist());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_FAVOURITE, song.getSong_favourite());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_DURATION, song.getSong_duration());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID, song.getSongId());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST, song.getSongArtist());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSongName());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM, song.getSongAlbum());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM_ID, song.getSongAlbumId());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSongWeight());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSongPlaylist());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_FAVOURITE, song.getSongFavourite());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_DURATION, song.getSongDuration());
                         Cursor c = sqLiteDatabase.rawQuery("select * from " + DBToneContract.SongEntry.TABLE_NAME + " where " + DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID
-                                + "='" + song.getSong_id() + "'", null);
+                                + "='" + song.getSongId() + "'", null);
                         if (c.moveToFirst()) {
                             c.close();
                         } else{
@@ -52,7 +51,7 @@ public class SongServiceImpl implements ISongService {
                     e.printStackTrace();
                     if (iCallbackResult!=null) {
                         final Exception addSongsEx = new Exception("DB ADD SONGS EXCEPTION");
-                        iCallbackResult.onFail(addSongsEx);
+                        iCallbackResult.onError(addSongsEx);
                     }
                     return null;
                 }
@@ -75,16 +74,16 @@ public class SongServiceImpl implements ISongService {
                     SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
                     for (Song song:songs) {
                         ContentValues values = new ContentValues();
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID, song.getSong_id());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST, song.getSong_artist());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSong_name());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM, song.getSong_album());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM_ID, song.getSong_album_id());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSong_weight());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSong_playlist());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_FAVOURITE, song.getSong_favourite());
-                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_DURATION, song.getSong_duration());
-                        sqLiteDatabase.update(DBToneContract.SongEntry.TABLE_NAME, values, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + "=?", new String[]{String.valueOf(song.getSong_id())});
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID, song.getSongId());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST, song.getSongArtist());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSongName());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM, song.getSongAlbum());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM_ID, song.getSongAlbumId());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSongWeight());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSongPlaylist());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_FAVOURITE, song.getSongFavourite());
+                        values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_DURATION, song.getSongDuration());
+                        sqLiteDatabase.update(DBToneContract.SongEntry.TABLE_NAME, values, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + "=?", new String[]{String.valueOf(song.getSongId())});
                     }
 
                     sqLiteDatabase.close();
@@ -94,7 +93,7 @@ public class SongServiceImpl implements ISongService {
                 catch (Exception e){
                     if (iCallbackResult!=null) {
                         final Exception updateSong= new Exception("DB UPDATE SONGS EXCEPTION");
-                        iCallbackResult.onFail(updateSong);
+                        iCallbackResult.onError(updateSong);
                     }
                     return null;
                 }
@@ -116,7 +115,7 @@ public class SongServiceImpl implements ISongService {
                 try{
                     SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
                     for (Song song : songs) {
-                        long id = song.getSong_id();
+                        long id = song.getSongId();
                         Cursor c = sqLiteDatabase.rawQuery("select * from " + DBToneContract.SongEntry.TABLE_NAME + " where " + DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID
                                 + "='" + id + "'", null);
                         if (c.moveToFirst()) {
@@ -134,7 +133,7 @@ public class SongServiceImpl implements ISongService {
                 catch (Exception e){
                     if (iCallbackResult!=null) {
                         final Exception deleteSongEx = new Exception("DB DELETE SONGS EXCEPTION");
-                        iCallbackResult.onFail(deleteSongEx);
+                        iCallbackResult.onError(deleteSongEx);
                     }
                     return null;
                 }
@@ -155,7 +154,7 @@ public class SongServiceImpl implements ISongService {
             protected Boolean doInBackground(Void... params) {
                 try{
                     SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
-                    long id = song.getSong_id();
+                    long id = song.getSongId();
                     Cursor c = sqLiteDatabase.rawQuery("select * from " + DBToneContract.SongEntry.TABLE_NAME + " where " + DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID
                             + "='" + id + "'", null);
                     if (c.moveToFirst()) {
@@ -172,7 +171,7 @@ public class SongServiceImpl implements ISongService {
                 catch (Exception e){
                     if (iCallbackResult!=null) {
                         final Exception deleteSongEx = new Exception("DB DELETE SONG EXCEPTION");
-                        iCallbackResult.onFail(deleteSongEx);
+                        iCallbackResult.onError(deleteSongEx);
                     }
                     return null;
                 }
@@ -194,16 +193,16 @@ public class SongServiceImpl implements ISongService {
                 try{
                     SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
                     ContentValues values = new ContentValues();
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID, song.getSong_id());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST, song.getSong_artist());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSong_name());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM, song.getSong_album());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM_ID, song.getSong_album_id());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSong_weight());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSong_playlist());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_FAVOURITE, song.getSong_favourite());
-                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_DURATION, song.getSong_duration());
-                    sqLiteDatabase.update(DBToneContract.SongEntry.TABLE_NAME, values, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + "=?", new String[]{String.valueOf(song.getSong_id())});
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID, song.getSongId());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST, song.getSongArtist());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, song.getSongName());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM, song.getSongAlbum());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_ALBUM_ID, song.getSongAlbumId());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_WEIGHT, song.getSongWeight());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST, song.getSongPlaylist());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_FAVOURITE, song.getSongFavourite());
+                    values.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_DURATION, song.getSongDuration());
+                    sqLiteDatabase.update(DBToneContract.SongEntry.TABLE_NAME, values, DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID + "=?", new String[]{String.valueOf(song.getSongId())});
                     sqLiteDatabase.close();
                     DatabaseManager.getInstance().closeDatabase();
                     return true;
@@ -211,7 +210,7 @@ public class SongServiceImpl implements ISongService {
                 catch (Exception e){
                     if (iCallbackResult!=null) {
                         final Exception updateSong= new Exception("DB UPDATE SONG EXCEPTION");
-                        iCallbackResult.onFail(updateSong);
+                        iCallbackResult.onError(updateSong);
                     }
                     return null;
                 }
@@ -257,7 +256,7 @@ public class SongServiceImpl implements ISongService {
                 }
                 catch (Exception e){
                     final Exception getSongByIdEx = new Exception("DB GET SONG BY ID EXCEPTION");
-                    iCallbackResult.onFail(getSongByIdEx);
+                    iCallbackResult.onError(getSongByIdEx);
                     return null;
                 }
                 return null;
@@ -304,7 +303,7 @@ public class SongServiceImpl implements ISongService {
                 catch (Exception e){
                     final Exception getSongByIdEx = new Exception("DB GET SONGS EXCEPTION");
                     if (iCallbackResult!=null) {
-                        iCallbackResult.onFail(getSongByIdEx);
+                        iCallbackResult.onError(getSongByIdEx);
                     }
                     return null;
                 }
@@ -352,7 +351,7 @@ public class SongServiceImpl implements ISongService {
                 catch (Exception e){
                     final Exception getSongByIdEx = new Exception("DB GET SONGS BY PLAYLIST EXCEPTION");
                     if (iCallbackResult!=null) {
-                        iCallbackResult.onFail(getSongByIdEx);
+                        iCallbackResult.onError(getSongByIdEx);
                     }
                     return null;
                 }

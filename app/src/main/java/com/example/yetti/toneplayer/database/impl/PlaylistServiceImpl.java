@@ -10,7 +10,6 @@ import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.IPlaylistService;
 import com.example.yetti.toneplayer.model.Playlist;
-import com.example.yetti.toneplayer.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +42,7 @@ public class PlaylistServiceImpl implements IPlaylistService {
                     e.printStackTrace();
                     if (iCallbackResult != null) {
                         final Exception addSongsEx = new Exception("DB ADD SONGS EXCEPTION");
-                        iCallbackResult.onFail(addSongsEx);
+                        iCallbackResult.onError(addSongsEx);
                     }
                     return null;
                 }
@@ -74,7 +73,7 @@ public class PlaylistServiceImpl implements IPlaylistService {
                 } catch (Exception e) {
                     if (iCallbackResult != null) {
                         final Exception deleteSongEx = new Exception("DB DELETE SONGS EXCEPTION");
-                        iCallbackResult.onFail(deleteSongEx);
+                        iCallbackResult.onError(deleteSongEx);
                     }
                     return null;
                 }
@@ -112,7 +111,7 @@ public class PlaylistServiceImpl implements IPlaylistService {
                 catch (Exception e){
                     final Exception getSongByIdEx = new Exception("DB GET SONGS EXCEPTION");
                     if (iCallbackResult!=null) {
-                        iCallbackResult.onFail(getSongByIdEx);
+                        iCallbackResult.onError(getSongByIdEx);
                     }
                     return null;
                 }

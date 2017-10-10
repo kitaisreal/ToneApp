@@ -1,34 +1,38 @@
 package com.example.yetti.toneplayer.model;
 
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Song implements Parcelable{
-    private long song_id;
-    private String song_artist;
-    private String song_name;
-    private String song_album;
-    private long song_album_id;
-    private int song_weight;
-    private long song_playlist_id;
-    private int song_favourite;
-    private long song_duration;
-    public Song(){
+public class Song implements Parcelable {
+
+    private long mSongId;
+    private String mSongArtist;
+    private String mSongName;
+    private String mSongAlbum;
+    private long mSongAlbumId;
+    private int mSongWeight;
+    private long mSongPlaylistId;
+    private int mSongFavourite;
+    private long mSongDuration;
+
+    public Song() {
 
     }
-    protected Song(Parcel in) {
-        song_id = in.readLong();
-        song_artist = in.readString();
-        song_name = in.readString();
-        song_album = in.readString();
-        song_album_id = in.readLong();
-        song_weight = in.readInt();
-        song_playlist_id=in.readLong();
-        song_favourite=in.readInt();
-        song_duration= in.readLong();
+
+    protected Song(Parcel pIn) {
+        mSongId = pIn.readLong();
+        mSongArtist = pIn.readString();
+        mSongName = pIn.readString();
+        mSongAlbum = pIn.readString();
+        mSongAlbumId = pIn.readLong();
+        mSongWeight = pIn.readInt();
+        mSongPlaylistId = pIn.readLong();
+        mSongFavourite = pIn.readInt();
+        mSongDuration = pIn.readLong();
     }
+
     public static final Creator<Song> CREATOR = new Creator<Song>() {
+
         @Override
         public Song createFromParcel(Parcel in) {
             return new Song(in);
@@ -40,48 +44,49 @@ public class Song implements Parcelable{
         }
     };
 
-    public Song(long song_id, String song_artist, String song_name, String song_album, long song_album_id, int song_weight, long song_playlist_id, int song_favourite, long song_duration) {
-        this.song_id = song_id;
-        this.song_artist = song_artist;
-        this.song_name = song_name;
-        this.song_album = song_album;
-        this.song_album_id = song_album_id;
-        this.song_weight = song_weight;
-        this.song_playlist_id = song_playlist_id;
-        this.song_favourite=song_favourite;
-        this.song_duration=song_duration;
+    public Song(long song_id, String song_artist, String song_name, String song_album, long song_album_id,
+                int song_weight, long song_playlist_id, int song_favourite, long song_duration) {
+        this.mSongId = song_id;
+        this.mSongArtist = song_artist;
+        this.mSongName = song_name;
+        this.mSongAlbum = song_album;
+        this.mSongAlbumId = song_album_id;
+        this.mSongWeight = song_weight;
+        this.mSongPlaylistId = song_playlist_id;
+        this.mSongFavourite = song_favourite;
+        this.mSongDuration = song_duration;
     }
 
-    public long getSong_id() {
-        return song_id;
+    public long getSongId() {
+        return mSongId;
     }
 
-    public void setSong_id(long song_id) {
-        this.song_id = song_id;
+    public void setSongId(long pSongId) {
+        this.mSongId = pSongId;
     }
 
-    public int getSong_weight() {
-        return song_weight;
+    public int getSongWeight() {
+        return mSongWeight;
     }
 
-    public void setSong_weight(int song_weight) {
-        this.song_weight = song_weight;
+    public void setSongWeight(int pSongWeight) {
+        this.mSongWeight = pSongWeight;
     }
 
-    public String getSong_artist() {
-        return song_artist;
+    public String getSongArtist() {
+        return mSongArtist;
     }
 
-    public void setSong_artist(String song_artist) {
-        this.song_artist = song_artist;
+    public void setSongArtist(String pSongArtist) {
+        this.mSongArtist = pSongArtist;
     }
 
-    public String getSong_name() {
-        return song_name;
+    public String getSongName() {
+        return mSongName;
     }
 
-    public void setSong_name(String song_name) {
-        this.song_name = song_name;
+    public void setSongName(String pSongName) {
+        this.mSongName = pSongName;
     }
 
     @Override
@@ -90,55 +95,55 @@ public class Song implements Parcelable{
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeLong(song_id);
-        dest.writeString(song_name);
-        dest.writeString(song_artist);
-        dest.writeString(song_album);
-        dest.writeLong(song_album_id);
-        dest.writeInt(song_weight);
-        dest.writeLong(song_playlist_id);
-        dest.writeInt(song_favourite);
-        dest.writeLong(song_duration);
+    public void writeToParcel(Parcel pDest, int pFlags) {
+        pDest.writeLong(mSongId);
+        pDest.writeString(mSongName);
+        pDest.writeString(mSongArtist);
+        pDest.writeString(mSongAlbum);
+        pDest.writeLong(mSongAlbumId);
+        pDest.writeInt(mSongWeight);
+        pDest.writeLong(mSongPlaylistId);
+        pDest.writeInt(mSongFavourite);
+        pDest.writeLong(mSongDuration);
     }
 
-    public long getSong_playlist() {
-        return song_playlist_id;
+    public long getSongPlaylist() {
+        return mSongPlaylistId;
     }
 
-    public void setSong_playlist(long song_playlist) {
-        this.song_playlist_id = song_playlist;
+    public void setSongPlaylist(long pSongPlaylist) {
+        this.mSongPlaylistId = pSongPlaylist;
     }
 
-    public String getSong_album() {
-        return song_album;
+    public String getSongAlbum() {
+        return mSongAlbum;
     }
 
-    public void setSong_album(String song_album) {
-        this.song_album = song_album;
+    public void setSongAlbum(String pSongAlbum) {
+        this.mSongAlbum = pSongAlbum;
     }
 
-    public long getSong_album_id() {
-        return song_album_id;
+    public long getSongAlbumId() {
+        return mSongAlbumId;
     }
 
-    public void setSong_album_id(long song_album_id) {
-        this.song_album_id = song_album_id;
+    public void setSongAlbumId(long pSongAlbumId) {
+        this.mSongAlbumId = pSongAlbumId;
     }
 
-    public int getSong_favourite() {
-        return song_favourite;
+    public int getSongFavourite() {
+        return mSongFavourite;
     }
 
-    public void setSong_favourite(int song_favourite) {
-        this.song_favourite = song_favourite;
+    public void setSongFavourite(int pSongFavourite) {
+        this.mSongFavourite = pSongFavourite;
     }
 
-    public long getSong_duration() {
-        return song_duration;
+    public long getSongDuration() {
+        return mSongDuration;
     }
 
-    public void setSong_duration(long song_duration) {
-        this.song_duration = song_duration;
+    public void setSongDuration(long pSongDuration) {
+        this.mSongDuration = pSongDuration;
     }
 }

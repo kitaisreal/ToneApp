@@ -1,42 +1,43 @@
 package com.example.yetti.toneplayer.network;
 
 public class Request {
-    private String url;
-    private String method;
-    private String body;
 
-    public Request(String url, String method, String body) {
-        this.url = url;
-        this.method = method;
-        this.body = body;
+    private String mUrl;
+    private String mMethod;
+    private String mBody;
+
+    public Request(String pUrl, String pMethod, String pBody) {
+        this.mUrl = pUrl;
+        this.mMethod = pMethod;
+        this.mBody = pBody;
     }
 
     public Request(String url, String method) {
-        this.url = url;
-        this.method = method;
+        this.mUrl = url;
+        this.mMethod = method;
     }
 
     public String getUrl() {
-        return url;
+        return mUrl;
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        this.mUrl = url;
     }
 
     public String getMethod() {
-        return method;
+        return mMethod;
     }
 
     public void setMethod(String method) {
-        this.method = method;
+        this.mMethod = method;
     }
 
     public String getBody() {
-        return body;
+        return mBody;
     }
 
     public void setBody(String body) {
-        this.body = body;
+        this.mBody = body;
     }
 }

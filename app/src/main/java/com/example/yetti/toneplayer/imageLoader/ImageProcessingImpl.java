@@ -1,6 +1,5 @@
 package com.example.yetti.toneplayer.imageLoader;
 
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
@@ -12,6 +11,7 @@ import java.net.URL;
 import javax.net.ssl.HttpsURLConnection;
 
 public class ImageProcessingImpl implements IImageProcessing {
+
     @Override
     public byte[] getBytesFromUrl(String urlLink) {
         HttpURLConnection httpURLConnection = null;
@@ -34,7 +34,7 @@ public class ImageProcessingImpl implements IImageProcessing {
             e.printStackTrace();
             return null;
         } finally {
-            if (httpURLConnection!=null) {
+            if (httpURLConnection != null) {
                 httpURLConnection.disconnect();
             }
         }
@@ -42,9 +42,10 @@ public class ImageProcessingImpl implements IImageProcessing {
 
     @Override
     public Bitmap getBitmapFromBytes(final byte[] bytes) {
-        final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+        final Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         return bitmap;
     }
+
     // TODO RESIZE BITMAP
     @Override
     public Bitmap resizeBitmap(Bitmap bitmap) {
