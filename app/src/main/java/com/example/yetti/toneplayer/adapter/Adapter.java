@@ -15,7 +15,7 @@ import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.model.SongContract;
 
 import java.util.List;
-
+//TODO RECYCLER VIEW
 public class Adapter extends BaseAdapter {
 
     private List<Song> songList;
@@ -69,7 +69,7 @@ public class Adapter extends BaseAdapter {
         holder.artistName.setText(((Song) getItem(position)).getSongArtist());
         holder.songName.setText(((Song) getItem(position)).getSongName());
         final Uri sArtworkUri = Uri.parse(SongContract.SONG_ALBUM_ARTWORK_URI + ((Song) getItem(position)).getSongAlbumId());
-        ImageLoader.getInstance().displayImageByUri(holder.song_album, sArtworkUri, mContext);
+        ImageLoader.getInstance(mContext).displayImage(sArtworkUri.toString(),holder.song_album);
         return convertView;
     }
 }

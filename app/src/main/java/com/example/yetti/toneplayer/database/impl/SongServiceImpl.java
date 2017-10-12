@@ -14,7 +14,7 @@ import com.example.yetti.toneplayer.model.Song;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
+//TODO CHANGE ASYNC -> THREAD PULL OR JUST RUNNABLE
 public class SongServiceImpl implements ISongService {
     @Override
     public void addSongs(final List<Song> songs, final ICallbackResult<Boolean> iCallbackResult) {

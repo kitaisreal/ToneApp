@@ -3,6 +3,7 @@ package com.example.yetti.toneplayer.database;
 
 import android.database.sqlite.SQLiteDatabase;
 
+//TODO FIELDS SERVICES
 public class DatabaseManager {
     private int mOpenCounter;
     private static DatabaseManager sInstance;

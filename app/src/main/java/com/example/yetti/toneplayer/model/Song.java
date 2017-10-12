@@ -18,7 +18,6 @@ public class Song implements Parcelable {
     public Song() {
 
     }
-
     protected Song(Parcel pIn) {
         mSongId = pIn.readLong();
         mSongArtist = pIn.readString();

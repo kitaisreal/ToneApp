@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
+import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.impl.SongServiceImpl;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.deleteDatabase(DBToneContract.DATABASE_NAME);
         songServiceManager = new SongServiceManager();
         httpClient = new HttpClient();
         jsonHandler = new JsonHandler();
