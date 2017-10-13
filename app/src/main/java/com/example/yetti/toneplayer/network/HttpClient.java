@@ -1,63 +1,65 @@
 package com.example.yetti.toneplayer.network;
 
-import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
+import com.example.yetti.toneplayer.utils.Utils;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import static android.content.ContentValues.TAG;
+
 public class HttpClient {
-    //TODO CHANGE ASYNC
-    public void createRequest(final Request pRequest, final ICallbackResult<String> pICallbackResult) {
-        new AsyncTask<Void, Void, String>() {
+
+    public void createAsyncRequest(final Request pRequest, final ICallbackResult<String> pICallbackResult) {
+        new Runnable() {
+
             @Override
-            protected String doInBackground(Void... pParams) {
+            public void run() {
                 try {
-                    String response = executeRequest(pRequest);
-                    System.out.println("RESPONCE " + response);
-                    return response;
+                    String response = createRequest(pRequest);
+                    pICallbackResult.onSuccess(response);
                 } catch (Exception e) {
-                    System.out.println("CATCH EXCEPTION");
+                    Log.d(TAG, "CREATE ASYNC REQUEST EXCEPTION");
                     if (pICallbackResult != null) {
-                        Exception exception = new Exception("REQUEST EXEPTION");
+                        Exception exception = new Exception("CREATE ASYNC REQUEST EXCEPTION");
                         pICallbackResult.onError(exception);
                     }
                 }
-                return null;
             }
-            @Override
-            protected void onPostExecute(String s) {
-                if (pICallbackResult != null && s != null) {
-                    pICallbackResult.onSuccess(s);
-                }
-            }
-        }.execute();
+        }.run();
     }
 
-    private String executeRequest(final Request pRequest) {
+    private String createRequest(final Request pRequest) {
         HttpURLConnection URLConnection = null;
         URL url;
-        System.out.println("EXECUTING REQUEST");
         try {
             url = new URL(pRequest.getUrl());
-            System.out.println("URL PROTOCOL HTTP CLIENT " + url);
-            URLConnection = (HttpURLConnection) url.openConnection();
-            setConnectionProperties(URLConnection, pRequest);
-            InputStream in = new BufferedInputStream(URLConnection.getInputStream());
-            ByteArrayOutputStream result = new ByteArrayOutputStream();
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = in.read(buffer)) != -1) {
-                result.write(buffer, 0, length);
+            if (url.toString().toLowerCase().contains(HttpContract.HTTP)) {
+                URLConnection = (HttpURLConnection) url.openConnection();
             }
-            return result.toString("UTF-8");
+            if (url.toString().toLowerCase().contains(HttpContract.HTTPS)) {
+                URLConnection = (HttpsURLConnection) url.openConnection();
+            }
+            if (URLConnection != null) {
+                setConnectionProperties(URLConnection, pRequest);
+                InputStream in = new BufferedInputStream(URLConnection.getInputStream());
+                ByteArrayOutputStream result = new ByteArrayOutputStream();
+                OutputStream outputStream = new BufferedOutputStream(result);
+                Utils.copyInputStreamInOutputStream(in, outputStream);
+                return result.toString(HttpContract.UTF_8);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(TAG, "CREATE REQUEST EXCEPTION");
         } finally {
             if (URLConnection != null) {
                 URLConnection.disconnect();
@@ -69,19 +71,20 @@ public class HttpClient {
     private void setConnectionProperties(HttpURLConnection pHttpURLConnection, Request pRequest) {
         try {
             pHttpURLConnection.setRequestMethod(pRequest.getMethod());
-            pHttpURLConnection.setRequestProperty("Content-Type", "application/json");
+            if (pRequest.getHeaders() != null) {
+                for (String s : pRequest.getHeaders().keySet()) {
+                    pHttpURLConnection.setRequestProperty(s, pRequest.getHeaders().get(s));
+                }
+            }
             if (pRequest.getBody() != null) {
                 pHttpURLConnection.setDoOutput(true);
                 pHttpURLConnection.setDoInput(true);
-                final OutputStream stream;
-                stream = pHttpURLConnection.getOutputStream();
-                String requestBody = pRequest.getBody();
-                final byte[] body = requestBody.getBytes("UTF-8");
-                stream.write(body);
-                stream.close();
+                final OutputStream stream = pHttpURLConnection.getOutputStream();
+                InputStream inputStream = new ByteArrayInputStream(pRequest.getBody().getBytes(HttpContract.UTF_8));
+                Utils.copyInputStreamInOutputStream(inputStream, stream);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(TAG, "SET CONNECTION PROPERTIES EXCEPTION");
         }
     }
 }

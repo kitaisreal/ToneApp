@@ -7,7 +7,7 @@ import java.io.OutputStream;
 public final class Utils {
     public static final int DEFAULT_BUFFER_SIZE=1024;
     private Utils(){}
-    public static void copyStream(final InputStream pInputStream, final OutputStream pOutputStream) throws IOException {
+    public static void copyInputStreamInOutputStream(final InputStream pInputStream, final OutputStream pOutputStream) throws IOException {
         int bytesRead;
         final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         while ((bytesRead = pInputStream.read(buffer)) > 0) {

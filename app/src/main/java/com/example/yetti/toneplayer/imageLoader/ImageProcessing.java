@@ -9,6 +9,8 @@ import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.example.yetti.toneplayer.R;
+import com.example.yetti.toneplayer.network.HttpContract;
 import com.example.yetti.toneplayer.utils.Utils;
 
 import java.io.ByteArrayOutputStream;
@@ -27,7 +29,7 @@ public class ImageProcessing {
         return decodeBitmap(pUrlLink,-1,-1);
     }
     private Bitmap decodeBitmap(final String pUrlLink, final int pXWidth, final int pYHight){
-        if (pUrlLink.toLowerCase().contains("http")|| pUrlLink.toLowerCase().contains("https")){
+        if (pUrlLink.toLowerCase().contains(HttpContract.HTTP)|| pUrlLink.toLowerCase().contains(HttpContract.HTTP)){
             return getBitmapFromBytes(getBytesFromUrl(pUrlLink));
         }
         if (pUrlLink.toLowerCase().contains("content")){
@@ -41,7 +43,7 @@ public class ImageProcessing {
         try {
             bitmap = MediaStore.Images.Media.getBitmap(mContext.getContentResolver(), imageUri);
         } catch (IOException ex){
-            //TODO ADD DEFAULT
+            bitmap = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.unknown_artist);
         }
         return bitmap;
     }
@@ -55,7 +57,7 @@ public class ImageProcessing {
             if (httpURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 return null;
             }
-            Utils.copyStream(in,outputStream);
+            Utils.copyInputStreamInOutputStream(in,outputStream);
             return outputStream.toByteArray();
         } catch (final Exception ex) {
             Log.d(TAG, "GET BYTES FROM URL EXCEPTION");

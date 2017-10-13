@@ -13,4 +13,7 @@ public final class HttpContract {
     public static final String GET_TEST = REST_API_URL + GET_TEST_PATH;
     public static final String GET_METHOD = "GET";
     public static final String POST_METHOD = "POST";
+    public static final String HTTP="http";
+    public static final String HTTPS="https";
+    public static final String UTF_8="UTF-8";
 }

@@ -38,7 +38,7 @@ public class DiskCacheImpl implements IDiskCache {
             if (snapshot != null) {
                 snapshot.getInputStream(0);
                 final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                Utils.copyStream(snapshot.getInputStream(0), outputStream);
+                Utils.copyInputStreamInOutputStream(snapshot.getInputStream(0), outputStream);
                 bitmap = BitmapFactory.decodeByteArray(outputStream.toByteArray(), 0, outputStream.toByteArray().length);
             }
         } finally {
