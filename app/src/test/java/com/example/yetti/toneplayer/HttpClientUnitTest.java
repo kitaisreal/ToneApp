@@ -28,7 +28,12 @@ public class HttpClientUnitTest {
     }
     @Test
     public void testGET() throws Exception{
-        httpClient.createAsyncRequest(new Request(HttpContract.GET_TEST, HttpContract.GET_METHOD), new ICallbackResult<String>() {
+        Map<String,String> headers = new HashMap<>();
+        headers.put("Content-Type","application/json");
+        Request request = new Request.RequestBuilder(HttpContract.GET_TEST).
+                headers(headers).
+                method(HttpContract.GET_METHOD).build();
+        httpClient.createAsyncRequest(request, new ICallbackResult<String>() {
             @Override
             public void onSuccess(String s) {
                 assertEquals(s,TestModule.GET_TEST_METHOD_RESULT);

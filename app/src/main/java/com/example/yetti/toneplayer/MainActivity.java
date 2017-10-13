@@ -34,7 +34,7 @@ import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.impl.SongServiceImpl;
-import com.example.yetti.toneplayer.json.JsonHandler;
+import com.example.yetti.toneplayer.json.JsonParserImpl;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.network.HttpClient;
 import com.example.yetti.toneplayer.service.SongService;
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SongServiceManager songServiceManager;
     public SongService.myBinder songServiceBinder;
     HttpClient httpClient;
-    JsonHandler jsonHandler;
+    JsonParserImpl jsonHandler;
     private DrawerLayout mDrawerLayout;
 
 
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         this.deleteDatabase(DBToneContract.DATABASE_NAME);
         songServiceManager = new SongServiceManager();
         httpClient = new HttpClient();
-        jsonHandler = new JsonHandler();
+        jsonHandler = new JsonParserImpl();
         list = new ArrayList<>();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
