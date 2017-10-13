@@ -1,9 +1,7 @@
 package com.example.yetti.toneplayer.network;
 
-import android.app.Application;
 import android.util.Log;
 
-import com.example.yetti.toneplayer.MainApplication;
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.utils.Utils;
 

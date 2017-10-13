@@ -2,6 +2,7 @@ package com.example.yetti.toneplayer.database;
 
 
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 //TODO FIELDS SERVICES
 public class DatabaseManager {
@@ -11,6 +12,7 @@ public class DatabaseManager {
     private SQLiteDatabase mDatabase;
 
     public static synchronized void initializeInstance(DBToneHelper helper) {
+        Log.d("DBMANAGER","INITIALIZEINSTANCe");
         if (sInstance == null) {
             sInstance = new DatabaseManager();
             mDatabaseHelper = helper;

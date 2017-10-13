@@ -9,6 +9,7 @@ import android.support.v4.media.session.MediaControllerCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 /**
  * Helper APIs for constructing MediaStyle notifications

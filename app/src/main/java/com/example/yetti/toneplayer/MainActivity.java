@@ -2,14 +2,11 @@ package com.example.yetti.toneplayer;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -22,13 +19,13 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.content.ContentHelper;
 import com.example.yetti.toneplayer.database.impl.SongDBServiceImpl;
 import com.example.yetti.toneplayer.model.Song;
-import com.example.yetti.toneplayer.service.SongService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +38,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     SongList mSongList;
     private DrawerLayout mDrawerLayout;
     private ContentHelper mContentHelper;
-    private MainApplication mMainApplication;
+    private CoreApplication mMainApplication;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMainApplication = (MainApplication) getApplication();
+        mMainApplication = (CoreApplication) getApplication();
         setContentView(R.layout.activity_main);
         mContentHelper = new ContentHelper(this);
         setupNavBarToolbar();
@@ -74,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
 
                 @Override
+
                 public void onError(Exception e) {
 
                 }
@@ -91,8 +89,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+    @Override
     protected void onDestroy() {
         super.onDestroy();
+        mMainApplication.unbindServiceOfApplication();
+        Log.d("OUR PROBLEM", "UNBIND SERVICE FROM MAIN ACTIVITY");
     }
     public boolean checkPermissionREAD_EXTERNAL_STORAGE(
             final Context context) {
@@ -126,12 +127,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return mMainApplication.getMediaServiceBound();
     }
     public MediaControllerCompat getMediaControllerCompat(){
+        Log.d("ACTIVITY",""+mMainApplication.getMediaControllerCompat());
         return mMainApplication.getMediaControllerCompat();
     }
-    /*
-    public SongService.myBinder getSongServiceBinder(){
-        return mMainApplication.getSongServiceBinder();
-    }*/
     public void showDialog(final String msg, final Context context,
                            final String permission) {
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);

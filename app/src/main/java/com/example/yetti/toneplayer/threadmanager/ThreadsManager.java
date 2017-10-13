@@ -1,6 +1,8 @@
 package com.example.yetti.toneplayer.threadmanager;
 
 
+import android.util.Log;
+
 import com.example.yetti.toneplayer.imageLoader.ImageLoader;
 
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,6 +29,7 @@ public class ThreadsManager {
     }
 
     private ThreadsManager() {
+        Log.d("ThreadsManager","INITIALIZATION");
         mForDiskLoaderTasks = new ThreadPoolExecutor(
                 1,
                 1,

@@ -65,7 +65,6 @@ public class SongService extends Service implements
         Log.d(LOG_TAG, "onStartCommand");
         return super.onStartCommand(intent, flags, startId);
     }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
