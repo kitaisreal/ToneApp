@@ -1,7 +1,5 @@
 package com.example.yetti.toneplayer.json;
 
-import android.os.AsyncTask;
-import android.util.JsonReader;
 import android.util.Log;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
@@ -20,13 +18,13 @@ import java.util.List;
 public class JsonParserImpl implements IJsonParser {
     private final String TAG="JSON PARSER";
     @Override
-    public void AsyncConvertSongsToJson(final List<Song> pSongs, final ICallbackResult<String> pICallbackResult) {
+    public void asyncConvertSongsToJson(final List<Song> pSongs, final ICallbackResult<String> pICallbackResult) {
         new Runnable() {
 
             @Override
             public void run() {
                 try {
-                    pICallbackResult.onSuccess(ConvertSongsToJson(pSongs));
+                    pICallbackResult.onSuccess(convertSongsToJson(pSongs));
                 } catch (Exception ex){
                     Log.d(TAG, "ASYNC CONVERT SONGS TO JSON EX");
                     Exception exception = new Exception("ASYNC CONVERT SONGS TO JSON EX");
@@ -36,13 +34,13 @@ public class JsonParserImpl implements IJsonParser {
         }.run();
     }
     @Override
-    public void AsyncConvertJsonToSongs(final String pJson, final ICallbackResult<List<Song>> pICallbackResult) {
+    public void asyncConvertJsonToSongs(final String pJson, final ICallbackResult<List<Song>> pICallbackResult) {
         new Runnable() {
 
             @Override
             public void run() {
                 try{
-                    pICallbackResult.onSuccess(ConvertJsonToSongs(pJson));
+                    pICallbackResult.onSuccess(convertJsonToSongs(pJson));
                 } catch (Exception ex){
                     Log.d(TAG, "ASYNC CONVERT JSON TO SONGS EX");
                     Exception exception = new Exception("ASYNC CONVERT JSON TO SONGS EX");
@@ -52,20 +50,20 @@ public class JsonParserImpl implements IJsonParser {
         }.run();
     }
     @Override
-    public String ConvertSongsToJson(List<Song> pSongList){
+    public String convertSongsToJson(List<Song> pSongList){
         JSONArray jsonArray = new JSONArray();
         for (Song s : pSongList) {
-            jsonArray.put(ConvertSongToJson(s));
+            jsonArray.put(convertSongToJson(s));
         }
         return jsonArray.toString();
     }
     @Override
-    public List<Song> ConvertJsonToSongs(String pJSONSongList){
+    public List<Song> convertJsonToSongs(String pJSONSongList){
         List<Song> songs = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONArray(pJSONSongList);
             for (int i=0;i<jsonArray.length();i++){
-                songs.add(ConvertJsonToSong(jsonArray.getJSONObject(i)));
+                songs.add(convertJsonToSong(jsonArray.getJSONObject(i)));
             }
         }
         catch (JSONException ex){
@@ -73,7 +71,7 @@ public class JsonParserImpl implements IJsonParser {
         }
         return songs;
     };
-    private JSONObject ConvertSongToJson(Song pSong) {
+    private JSONObject convertSongToJson(Song pSong) {
         JSONObject jsonObject = new JSONObject();
         try {
             jsonObject.put(DBToneContract.SongEntry.COLUMN_NAME_SONG_TITLE, pSong.getSongName());
@@ -92,7 +90,7 @@ public class JsonParserImpl implements IJsonParser {
         return new JSONObject();
     }
 
-    private Song ConvertJsonToSong(JSONObject pSong) {
+    private Song convertJsonToSong(JSONObject pSong) {
         Song response = new Song();
         try {
             response.setSongArtist(String.valueOf(pSong.get(DBToneContract.SongEntry.COLUMN_NAME_SONG_ARTIST)));

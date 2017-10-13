@@ -5,7 +5,7 @@ import com.example.yetti.toneplayer.model.Song;
 
 import java.util.List;
 
-public interface ISongService {
+public interface ISongDBService {
 
     void addSongs(final List<Song> songs, final ICallbackResult<Boolean> iCallbackResult);
 

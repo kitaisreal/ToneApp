@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface IJsonParser {
 
-    void AsyncConvertSongsToJson(final List<Song> pSongs, final ICallbackResult<String> pICallbackResult);
+    void asyncConvertSongsToJson(final List<Song> pSongs, final ICallbackResult<String> pICallbackResult);
 
-    void AsyncConvertJsonToSongs(final String pJson, final ICallbackResult<List<Song>> pICallbackResult);
+    void asyncConvertJsonToSongs(final String pJson, final ICallbackResult<List<Song>> pICallbackResult);
 
-    String ConvertSongsToJson(List<Song> pSongList);
+    String convertSongsToJson(List<Song> pSongList);
 
-    List<Song> ConvertJsonToSongs(String pJSONSongList);
+    List<Song> convertJsonToSongs(String pJSONSongList);
 }

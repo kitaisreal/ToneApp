@@ -42,9 +42,9 @@ public class JsonHandlerUnitTest {
                 e.printStackTrace();
             }
         };
-        jsonHandler.AsyncConvertSongsToJson(mTestSongList, ConvertSongsToJsonCallback);
+        jsonHandler.asyncConvertSongsToJson(mTestSongList, ConvertSongsToJsonCallback);
         Robolectric.flushBackgroundThreadScheduler();
-        jsonHandler.AsyncConvertJsonToSongs(responseJson[0], new ICallbackResult<List<Song>>() {
+        jsonHandler.asyncConvertJsonToSongs(responseJson[0], new ICallbackResult<List<Song>>() {
 
             @Override
             public void onSuccess(List<Song> songs) {

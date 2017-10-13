@@ -1,7 +1,9 @@
 package com.example.yetti.toneplayer.network;
 
+import android.app.Application;
 import android.util.Log;
 
+import com.example.yetti.toneplayer.MainApplication;
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.utils.Utils;
 
@@ -16,10 +18,9 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import static android.content.ContentValues.TAG;
 
 public class HttpClient {
-
+    private final String TAG = "HTTP CLIENT";
     public void createAsyncRequest(final Request pRequest, final ICallbackResult<String> pICallbackResult) {
         new Runnable() {
 
@@ -31,7 +32,7 @@ public class HttpClient {
                 } catch (Exception e) {
                     Log.d(TAG, "CREATE ASYNC REQUEST EXCEPTION");
                     if (pICallbackResult != null) {
-                        Exception exception = new Exception("CREATE ASYNC REQUEST EXCEPTION");
+                        Exception exception = new Exception(TAG + "CREATE ASYNC REQUEST EXCEPTION");
                         pICallbackResult.onError(exception);
                     }
                 }

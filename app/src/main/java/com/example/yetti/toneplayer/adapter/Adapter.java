@@ -58,8 +58,8 @@ public class Adapter extends BaseAdapter {
         if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.song, parent, false);
             holder = new ViewHolder();
-            holder.songName = (TextView) convertView.findViewById(R.id.songName);
-            holder.artistName = (TextView) convertView.findViewById(R.id.artistName);
+            holder.songName = (TextView) convertView.findViewById(R.id.song_name);
+            holder.artistName = (TextView) convertView.findViewById(R.id.artist_name);
             holder.song_album = (ImageView) convertView.findViewById(R.id.imageView);
             convertView.setTag(holder);
         } else {

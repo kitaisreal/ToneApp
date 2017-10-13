@@ -4,4 +4,7 @@
     <dimen name="nav_header_vertical_spacing">16dp</dimen>
     <dimen name="nav_header_height">160dp</dimen>
     <dimen name="song_item_size">60dp</dimen>
+    <dimen name="song_title_size">16sp</dimen>
+    <dimen name="song_artist_name_size">14sp</dimen>
+    <dimen name="song_item_image_size">55dp</dimen>
 </resources>

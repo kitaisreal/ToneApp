@@ -8,14 +8,14 @@ import android.os.AsyncTask;
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DatabaseManager;
-import com.example.yetti.toneplayer.database.ISongService;
+import com.example.yetti.toneplayer.database.ISongDBService;
 import com.example.yetti.toneplayer.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
 //TODO CHANGE ASYNC -> THREAD PULL OR JUST RUNNABLE
-public class SongServiceImpl implements ISongService {
+public class SongDBServiceImpl implements ISongDBService {
     @Override
     public void addSongs(final List<Song> songs, final ICallbackResult<Boolean> iCallbackResult) {
         new AsyncTask<Void, Void, Boolean>() {
@@ -23,6 +23,7 @@ public class SongServiceImpl implements ISongService {
             protected Boolean doInBackground(Void... params) {
                 try{
                     SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
+
                     for (Song song:songs){
                         ContentValues values = new ContentValues();
                         values.put(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID, song.getSongId());
@@ -324,7 +325,8 @@ public class SongServiceImpl implements ISongService {
             @Override
             protected List<Song> doInBackground(Void... params) {
                 try {SQLiteDatabase sqLiteDatabase = DatabaseManager.getInstance().openDatabase();
-                    Cursor c = sqLiteDatabase.query(DBToneContract.SongEntry.TABLE_NAME, null, null, null, null, null, null);
+                    Cursor c = sqLiteDatabase.rawQuery("select * from " + DBToneContract.SongEntry.TABLE_NAME + " where " +
+                            DBToneContract.SongEntry.COLUMN_NAME_SONG_PLAYLIST+ "='" + SongPlaylist + "'", null);
                     List<Song> songs = new ArrayList<>();
                     if (c.moveToFirst()) {
                         int idColIndex = c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_ENTRY_ID);
@@ -337,10 +339,8 @@ public class SongServiceImpl implements ISongService {
                         int songFavourite = c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_SONG_FAVOURITE);
                         int songDuration= c.getColumnIndex(DBToneContract.SongEntry.COLUMN_NAME_SONG_DURATION);
                         do {
-                            if (Objects.equals(c.getInt(songPlaylist), SongPlaylist)) {
                                 songs.add(new Song(c.getInt(idColIndex), c.getString(songArtist), c.getString(songTitle), c.getString(songAlbum), c.getInt(songAlbumId),
                                         c.getInt(songWeight), c.getInt(songPlaylist), c.getInt(songFavourite), c.getInt(songDuration)));
-                            }
                         } while (c.moveToNext());
                         c.close();
                         sqLiteDatabase.close();

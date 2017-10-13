@@ -1,5 +1,6 @@
 package com.example.yetti.toneplayer;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.os.HandlerThread;
@@ -14,6 +15,7 @@ import android.widget.MediaController;
 import com.example.yetti.toneplayer.adapter.Adapter;
 import com.example.yetti.toneplayer.controller.MusicController;
 import com.example.yetti.toneplayer.model.Song;
+import com.example.yetti.toneplayer.musicrepository.MusicRepository;
 import com.example.yetti.toneplayer.service.SongService;
 
 import java.util.ArrayList;
@@ -35,12 +37,8 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.song_list, null);
         ListView listView = (ListView) v.findViewById(R.id.listSongs);
-
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            System.out.println(bundle.size());
-            songServiceBinder = (SongService.myBinder) bundle.getBinder("songServiceBinder");
-            System.out.println(songServiceBinder);
             list = bundle.getParcelableArrayList("songs");
         }
         Adapter adapter = new Adapter(getActivity(), list);
@@ -62,12 +60,16 @@ public class SongList extends Fragment implements MediaController.MediaPlayerCon
             }
         });
         listView.setAdapter(adapter);
+        MusicRepository.getInstance().setCurrentSongList(list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                songServiceBinder.getService().playSong(id);
-                mc.show(0);
-                mc.setEnabled(true);
+                if(((MainActivity)getActivity()).getMusicServiceBound()){
+                    MusicRepository.getInstance().setCurrentPosition(position);
+                    ((MainActivity)getActivity()).getMediaControllerCompat().getTransportControls().play();
+                    mc.show();
+                }
+
             }
         });
         return v;

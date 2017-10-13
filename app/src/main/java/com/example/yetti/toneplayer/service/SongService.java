@@ -30,7 +30,6 @@ public class SongService extends Service implements
     List<Song> songList;
     private final IBinder myBinder = new myBinder();
     private static final int NOTIFY_ID = 1;
-    int currentSongPosition = 0;
 
     @Override
     public void onCreate() {
@@ -83,6 +82,7 @@ public class SongService extends Service implements
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d(LOG_TAG, "MyService onUnbind");
+        mediaPlayer.release();
         return true;
     }
 
