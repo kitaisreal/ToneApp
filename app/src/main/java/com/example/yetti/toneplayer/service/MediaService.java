@@ -50,6 +50,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
         mMediaSessionCompat = new MediaSessionCompat(this,TAG);
         mMediaSessionCompat.setCallback(mMediaSessionCallback);
         mMediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mMediaSessionCompat.setMediaButtonReceiver(null);
         mImageProcessing= new ImageProcessing(mContext);
         mNotificationHelper = new NotificationHelper(this,mContext,mMediaSessionCompat);
         initMediaPlayer();
@@ -67,7 +68,6 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     public void onDestroy(){
         super.onDestroy();
         Log.d("OUR PROBLEM","DESTROY");
-        prepareToStopService();
         mMediaSessionCompat.release();
         mMediaPlayer.release();
         Log.d("OUR PROBLEM", "DESROYED");
@@ -97,7 +97,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        MediaButtonReceiver.handleIntent(mMediaSessionCompat,intent);
+        MediaButtonReceiver.handleIntent(mMediaSessionCompat, intent);
         return super.onStartCommand(intent, flags, startId);
     }
     @Override
@@ -107,6 +107,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     @Override
     public boolean onUnbind(Intent intent) {
         Log.d("OUR PROBLEM","ON UNBIND");
+        prepareToStopService();
         return true;
     }
     @Override
@@ -142,6 +143,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
         @Override
         public void onPlay(){
             Log.d(TAG, "MEDIA SESSION TRY TO PLAY");
+            startService(new Intent(mContext,MediaService.class));
             Song song = MusicRepository.getInstance().getCurrentSong();
             Log.d(TAG,"MEDIA PLAYER GET CURRENT POSITION " + mMediaPlayer.getCurrentPosition());
             playSong((int) song.getSongId());
@@ -156,12 +158,16 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
             mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PAUSED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
             mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_PAUSED);
         }
+        public int getDuration(){
+            return 5;
+        }
         @Override
         public void onStop(){
             Log.d("OUR PROBLEM", "MEDIA SESSION TRY TO STOP");
             mMediaPlayer.stop();
             mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_STOPPED,PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
             mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_STOPPED);
+            stopSelf();
         }
         @Override
         public void onSkipToNext() {

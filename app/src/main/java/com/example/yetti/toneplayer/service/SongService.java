@@ -14,7 +14,7 @@ import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.example.yetti.toneplayer.MainActivity;
+import com.example.yetti.toneplayer.ui.MainActivity;
 import com.example.yetti.toneplayer.model.Song;
 
 import java.io.IOException;

@@ -30,16 +30,19 @@ public class NotificationHelper {
         Log.d(TAG,"REFRESH NOTIFICATION AND FOREGROUND STATUS");
         switch (playbackState) {
             case PlaybackStateCompat.STATE_PLAYING: {
-                NotificationManagerCompat.from(mContext).notify(2,getNotification(playbackState));
+                NotificationManagerCompat.from(mContext).notify(404,getNotification(playbackState));
                 mMediaService.stopForeground(false);
                 break;
             }
             case PlaybackStateCompat.STATE_PAUSED: {
-                NotificationManagerCompat.from(mContext).notify(2,getNotification(playbackState));
+                NotificationManagerCompat.from(mContext).notify(404,getNotification(playbackState));
                 mMediaService.stopForeground(false);
                 break;
             }
             default: {
+                System.out.println("MCONTEXT " + mContext);
+                System.out.println("MEDIA SESSION COMPAT " + mMediaSessionCompat);
+                System.out.println("SERVICE " + mMediaService);
                 mMediaService.stopForeground(true);
                 break;
             }

@@ -9,6 +9,7 @@ import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.impl.SongDBServiceImpl;
 import com.example.yetti.toneplayer.model.Playlist;
 import com.example.yetti.toneplayer.model.Song;
+import com.example.yetti.toneplayer.ui.MainActivity;
 
 import org.junit.Before;
 import org.junit.Test;

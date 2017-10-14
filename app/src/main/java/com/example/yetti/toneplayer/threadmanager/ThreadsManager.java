@@ -3,8 +3,6 @@ package com.example.yetti.toneplayer.threadmanager;
 
 import android.util.Log;
 
-import com.example.yetti.toneplayer.imageLoader.ImageLoader;
-
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;

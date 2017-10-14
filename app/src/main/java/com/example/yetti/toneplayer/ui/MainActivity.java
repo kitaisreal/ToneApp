@@ -1,4 +1,4 @@
-package com.example.yetti.toneplayer;
+package com.example.yetti.toneplayer.ui;
 
 import android.Manifest;
 import android.app.Activity;
@@ -22,6 +22,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.yetti.toneplayer.CoreApplication;
+import com.example.yetti.toneplayer.R;
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.content.ContentHelper;
 import com.example.yetti.toneplayer.database.impl.SongDBServiceImpl;
@@ -35,10 +37,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
     boolean bound = false;
     android.app.FragmentTransaction mFragmentTransaction;
-    SongList mSongList;
+    SongListFragment mSongList;
+    ArtistListFragment mArtistListFragment;
     private DrawerLayout mDrawerLayout;
     private ContentHelper mContentHelper;
     private CoreApplication mMainApplication;
+    private SongDBServiceImpl mSongDBService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,21 +50,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         mContentHelper = new ContentHelper(this);
         setupNavBarToolbar();
-        final SongDBServiceImpl songService = mMainApplication.getSongDBService();
+        mArtistListFragment = new ArtistListFragment();
+        mSongDBService = mMainApplication.getSongDBService();
         if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             mContentHelper.getAsyncSongsFromDevice(new ICallbackResult<List<Song>>() {
                 @Override
                 public void onSuccess(final List<Song> songs) {
-                    songService.addSongs(songs, new ICallbackResult<Boolean>() {
+                    mSongDBService.addSongs(songs, new ICallbackResult<Boolean>() {
                         @Override
                         public void onSuccess(Boolean aBoolean) {
-                            Bundle bundle = new Bundle();
-                            bundle.putParcelableArrayList("songs", (ArrayList<? extends Parcelable>) songs);
-                            mSongList = new SongList();
-                            mSongList.setArguments(bundle);
-                            mFragmentTransaction = getFragmentManager().beginTransaction();
-                            mFragmentTransaction.add(R.id.frgmCont, mSongList);
-                            mFragmentTransaction.commit();
+                            setSongListFragment(songs);
+                            replaceSongListFragment();
                         }
 
                         @Override
@@ -78,6 +78,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
     }
+    private void setSongListFragment(List<Song> pSongList){
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("songs", (ArrayList<? extends Parcelable>) pSongList);
+        mSongList = new SongListFragment();
+        mSongList.setArguments(bundle);
+    }
+    private void replaceSongListFragment() {
+        mFragmentTransaction = getFragmentManager().beginTransaction();
+        mFragmentTransaction.replace(R.id.frgmCont, mSongList);
+        mFragmentTransaction.commit();
+    }
     private void setupNavBarToolbar(){
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -89,9 +100,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+    //TODO FIX BUG
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mMainApplication.getMediaControllerCompat().getTransportControls().stop();
         mMainApplication.unbindServiceOfApplication();
         Log.d("OUR PROBLEM", "UNBIND SERVICE FROM MAIN ACTIVITY");
     }
@@ -175,9 +188,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.all_songs) {
+            mSongDBService.getAllSongs(new ICallbackResult<List<Song>>() {
 
+                @Override
+                public void onSuccess(List<Song> pSongList) {
+                    setSongListFragment(pSongList);
+                    replaceSongListFragment();
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    Log.d("TAG","ERROR");
+                }
+            });
         } else if (id == R.id.songs_artists) {
-
+            mFragmentTransaction = getFragmentManager().beginTransaction();
+            mFragmentTransaction.replace(R.id.frgmCont, mArtistListFragment);
+            mFragmentTransaction.commit();
         } else if (id == R.id.songs_playlists) {
 
         } else if (id == R.id.about) {
