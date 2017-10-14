@@ -11,7 +11,7 @@ import android.util.Log;
 
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
-import com.example.yetti.toneplayer.database.impl.SongDBServiceImpl;
+import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
 import com.example.yetti.toneplayer.imageLoader.ImageLoader;
 import com.example.yetti.toneplayer.service.MediaService;
 import com.example.yetti.toneplayer.service.SongService;
@@ -21,7 +21,7 @@ public class CoreApplication extends Application {
     private Intent bindIntent;
     private boolean boundToService=false;
     private ServiceConnection sConn;
-    private SongDBServiceImpl mSongDBService;
+    private AsyncDBServiceImpl mSongDBService;
     private MediaService.MediaServiceBinder mPlayerServiceBinder;
     private MediaControllerCompat mMediaControllerCompat;
     private final String TAG="APPLICATION";
@@ -40,7 +40,7 @@ public class CoreApplication extends Application {
         DatabaseManager.initializeInstance(new DBToneHelper(this));
         bindIntent = new Intent(this, MediaService.class);
         bindServiceToApplication();
-        mSongDBService = new SongDBServiceImpl();
+        mSongDBService = DatabaseManager.getInstance().getAsyncDBService();
         Log.d(TAG,"APPLICATION CREATED");
     }
 
@@ -82,7 +82,7 @@ public class CoreApplication extends Application {
         }
         boundToService=false;
     }
-    public SongDBServiceImpl getSongDBService(){
+    public AsyncDBServiceImpl getSongDBService(){
         return mSongDBService;
     }
 }

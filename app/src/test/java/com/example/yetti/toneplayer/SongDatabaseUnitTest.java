@@ -6,7 +6,7 @@ import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
-import com.example.yetti.toneplayer.database.impl.SongDBServiceImpl;
+import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
 import com.example.yetti.toneplayer.model.Playlist;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.ui.MainActivity;
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(RobolectricTestRunner.class)
 public class SongDatabaseUnitTest {
     private MainActivity activity;
-    private SongDBServiceImpl songService;
+    private AsyncDBServiceImpl songService;
     private List<Song> mTestSongList;
 
     @Before
@@ -37,7 +37,7 @@ public class SongDatabaseUnitTest {
         mTestSongList = TestModule.songList;
         activity = Robolectric.setupActivity(MainActivity.class);
         DatabaseManager.initializeInstance(new DBToneHelper(activity));
-        songService = new SongDBServiceImpl();
+        songService = DatabaseManager.getInstance().getAsyncDBService();
     }
 
     @Test

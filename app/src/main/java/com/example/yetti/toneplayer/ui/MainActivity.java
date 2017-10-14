@@ -26,7 +26,7 @@ import com.example.yetti.toneplayer.CoreApplication;
 import com.example.yetti.toneplayer.R;
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.content.ContentHelper;
-import com.example.yetti.toneplayer.database.impl.SongDBServiceImpl;
+import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
 import com.example.yetti.toneplayer.model.Song;
 
 import java.util.ArrayList;
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout mDrawerLayout;
     private ContentHelper mContentHelper;
     private CoreApplication mMainApplication;
-    private SongDBServiceImpl mSongDBService;
+    private AsyncDBServiceImpl mSongDBService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

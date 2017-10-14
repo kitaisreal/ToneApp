@@ -36,7 +36,7 @@ public class ArtistListAdapter extends  RecyclerView.Adapter<ArtistListAdapter.V
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Artist artist = mArtistList.get(position);
-        ImageLoader.getInstance(mContext).displayImage("http://www.reporterosasociados.com.co/wp/wp-content/uploads/2015/06/Sum-41.jpg",holder.mArtistImage);
+        ImageLoader.getInstance(mContext).displayImage("https://i.scdn.co/image/eb266625dab075341e8c4378a177a27370f91903",holder.mArtistImage);
         holder.mArtistTitle.setText(artist.getArtistName());
         holder.mSongCount.setText(String.valueOf("SONGS:"+artist.getSongCount()));
     }
@@ -47,8 +47,8 @@ public class ArtistListAdapter extends  RecyclerView.Adapter<ArtistListAdapter.V
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder{
-        public ImageView mArtistImage;
-        public TextView mArtistTitle;
+        private ImageView mArtistImage;
+        private TextView mArtistTitle;
         private TextView mSongCount;
         public ViewHolder(View itemView) {
             super(itemView);
