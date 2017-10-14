@@ -22,8 +22,8 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@Config(constants = BuildConfig.class)
 @RunWith(RobolectricTestRunner.class)
+@Config(constants = BuildConfig.class)
 public class PlaylistDatabaseUnitTest {
     private MainActivity activity;
     private PlaylistServiceImpl mPlaylistService;

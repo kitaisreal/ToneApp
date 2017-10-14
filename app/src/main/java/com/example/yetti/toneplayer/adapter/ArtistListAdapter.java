@@ -14,6 +14,7 @@ import com.example.yetti.toneplayer.imageLoader.ImageLoader;
 import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.model.SongContract;
+import com.example.yetti.toneplayer.network.HttpContract;
 
 import java.util.List;
 
@@ -36,7 +37,9 @@ public class ArtistListAdapter extends  RecyclerView.Adapter<ArtistListAdapter.V
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Artist artist = mArtistList.get(position);
-        ImageLoader.getInstance(mContext).displayImage("https://i.scdn.co/image/eb266625dab075341e8c4378a177a27370f91903",holder.mArtistImage);
+        System.out.println("ARTIST NAME " + artist.getArtistName());
+        System.out.println("URL " + HttpContract.GET_ARTIST_ART+artist.getArtistName());
+        ImageLoader.getInstance(mContext).displayImage("http://localhost:8080/api/getArtistImages/Eminem",holder.mArtistImage);
         holder.mArtistTitle.setText(artist.getArtistName());
         holder.mSongCount.setText(String.valueOf("SONGS:"+artist.getSongCount()));
     }

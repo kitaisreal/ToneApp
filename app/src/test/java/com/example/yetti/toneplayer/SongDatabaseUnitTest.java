@@ -24,16 +24,15 @@ import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
 
-
-@Config(constants = BuildConfig.class)
+@Config(constants =BuildConfig.class,  manifest = "src/main/AndroidManifest.xml",application = CoreApplication.class)
 @RunWith(RobolectricTestRunner.class)
 public class SongDatabaseUnitTest {
     private MainActivity activity;
     private AsyncDBServiceImpl songService;
     private List<Song> mTestSongList;
-
     @Before
     public void setup() {
+        Robolectric.flushBackgroundThreadScheduler();
         mTestSongList = TestModule.songList;
         activity = Robolectric.setupActivity(MainActivity.class);
         DatabaseManager.initializeInstance(new DBToneHelper(activity));

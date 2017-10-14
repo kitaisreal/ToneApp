@@ -1,6 +1,7 @@
 package com.example.yetti.toneplayer.database;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
+import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
 
 import java.util.List;
@@ -21,4 +22,8 @@ public interface IDBService {
     List<Song> getAllSongs();
 
     List<Song> getSongsByPlaylist(final int pSongPlaylist);
+
+    List<Artist> getArtists();
+
+    List<Song> getSongsByArtist(final String pArtistTitle);
 }

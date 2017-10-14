@@ -57,9 +57,9 @@ public class ArtistListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
         List<Artist> artistList = new ArrayList<>();
-        artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
-        artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
-        artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
+        artistList.add(new Artist("Eminem","ALBUMNAME",10));
+        artistList.add(new Artist("Sum 41","ALBUMNAME",10));
+        artistList.add(new Artist("Beastie Boys","ALBUMNAME",10));
         artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
         artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
         artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));

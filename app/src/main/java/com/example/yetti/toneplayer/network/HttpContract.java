@@ -7,6 +7,8 @@ public final class HttpContract {
     private static final String GET_NEXT_SONG_PATH = "/getNextSong";
     private static final String POST_TEST_PATH = "/testPOST";
     private static final String GET_TEST_PATH = "/testGET";
+    private static final String GET_ARTIST_ART_PATH="/getArtistImages/";
+    public static final String GET_ARTIST_ART=REST_API_URL+GET_ARTIST_ART_PATH;
     public static final String GET_NEXT_SONG = REST_API_URL + GET_NEXT_SONG_PATH;
     public static final String GET_RECOMMENDATIONS_LIST = REST_API_URL + RECOMMENDATIONS_PATH;
     public static final String POST_TEST = REST_API_URL + POST_TEST_PATH;

@@ -51,15 +51,19 @@ public class ImageProcessing {
         HttpURLConnection httpURLConnection = null;
         try {
             final URL url = new URL(pUrlLink);
+            System.out.println("URL " + url);
             httpURLConnection = (HttpURLConnection) url.openConnection();
+            httpURLConnection.setRequestMethod("GET");
             final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             final InputStream in = httpURLConnection.getInputStream();
             if (httpURLConnection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                 return null;
             }
+            System.out.println("UTILS COPY INPUT STREAM IN OUTPUT STREAM");
             Utils.copyInputStreamInOutputStream(in,outputStream);
             return outputStream.toByteArray();
         } catch (final Exception ex) {
+            ex.printStackTrace();
             Log.d(TAG, "GET BYTES FROM URL EXCEPTION");
             return null;
         } finally {

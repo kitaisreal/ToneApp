@@ -15,7 +15,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-@Config(constants = BuildConfig.class)
+@Config(application = CoreApplication.class,sdk = 18)
 @RunWith(RobolectricTestRunner.class)
 public class JsonHandlerUnitTest {
 

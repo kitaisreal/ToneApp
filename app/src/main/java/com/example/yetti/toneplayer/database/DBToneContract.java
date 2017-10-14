@@ -50,4 +50,8 @@ public final class DBToneContract {
         public static final String SQL_DELETE_ENTRIES =
                 "DROP TABLE IF EXISTS " + PlaylistEntry.TABLE_NAME;
     }
+    public static abstract class SQLTemplates {
+        public static final String SQL_SELECT_WHERE="SELECT %s FROM %s WHERE %s"+"='"+"%s"+"'";;
+        public static final String SQL_DISTINCT = "SELECT DISTINCT %s FROM %s";
+    }
 }

@@ -9,6 +9,7 @@ import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.IAsyncDBService;
+import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
 
 import java.util.ArrayList;
@@ -193,6 +194,33 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
                 }
                 else if(pSongListICallbackResult!=null){
                     Exception exception= new Exception("GET SONG BY PLAYLIST EXCEPTION");
+                    pSongListICallbackResult.onError(exception);
+                }
+            }
+        }.execute();
+    }
+    /*
+    @Override
+    public void getArtists(ICallbackResult<List<Artist>> pArtistListICallbackResult) {
+       return null;
+    }*/
+
+    @Override
+    public void getSongsByArtist(final String pArtistTitle,final ICallbackResult<List<Song>> pSongListICallbackResult) {
+        new AsyncTask<Void, Void, List<Song>>() {
+
+            @Override
+            protected List<Song> doInBackground(Void... params) {
+                return mDBService.getSongsByArtist(pArtistTitle);
+            }
+
+            @Override
+            protected void onPostExecute(List<Song> songs) {
+                if (pSongListICallbackResult != null && songs!=null) {
+                    pSongListICallbackResult.onSuccess(songs);
+                }
+                else if(pSongListICallbackResult!=null){
+                    Exception exception= new Exception("GET SONG BY ARTIST EXCEPTION");
                     pSongListICallbackResult.onError(exception);
                 }
             }

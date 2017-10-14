@@ -52,6 +52,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNavBarToolbar();
         mArtistListFragment = new ArtistListFragment();
         mSongDBService = mMainApplication.getSongDBService();
+        mSongDBService.getSongsByArtist("Sum 41", new ICallbackResult<List<Song>>() {
+
+            @Override
+            public void onSuccess(List<Song> pSongList) {
+                System.out.println("GET SONGS BY ARTIST");
+                for (Song s:pSongList){
+                    System.out.println(s.getSongAlbum() +" " + s.getSongId() +" " +s.getSongName()+" ");
+                }
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
         if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {
             mContentHelper.getAsyncSongsFromDevice(new ICallbackResult<List<Song>>() {
                 @Override

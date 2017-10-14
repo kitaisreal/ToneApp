@@ -1,6 +1,7 @@
 package com.example.yetti.toneplayer.database;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
+import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
 
 import java.util.List;
@@ -23,4 +24,7 @@ public interface IAsyncDBService {
 
     void getSongsByPlaylist(final int pSongPlaylist, final ICallbackResult<List<Song>> pSongListICallbackResult);
 
+    //void getArtists(final ICallbackResult<List<Artist>> pArtistListICallbackResult);
+
+    void getSongsByArtist(final String pArtistTitle,final ICallbackResult<List<Song>> pArtistListICallbackResult);
 }
