@@ -55,7 +55,7 @@ public class MusicRepository {
         mCurrentSongList = pCurrentSongList;
     }
 
-    private Song getPrevSong(){
+    public Song getPrevSong(){
         if (currentPosition>0) {
             currentPosition--;
         }
@@ -63,7 +63,6 @@ public class MusicRepository {
     }
 
     private Song getNormalPlayModeNextSong(){
-        currentPosition++;
         if (currentPosition<mCurrentSongList.size()){
             currentPosition++;
         }

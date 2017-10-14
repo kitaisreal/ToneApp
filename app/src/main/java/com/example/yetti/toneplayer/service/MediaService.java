@@ -1,30 +1,21 @@
 package com.example.yetti.toneplayer.service;
 
-import android.app.Notification;
-import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.media.MediaMetadataCompat;
 import android.support.v4.media.session.MediaButtonReceiver;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
-import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
-import com.example.yetti.toneplayer.MainActivity;
-import com.example.yetti.toneplayer.R;
 import com.example.yetti.toneplayer.imageLoader.ImageProcessing;
 import com.example.yetti.toneplayer.model.Song;
 import com.example.yetti.toneplayer.model.SongContract;
@@ -34,7 +25,7 @@ import java.io.IOException;
 
 public class MediaService extends Service implements  MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
         MediaPlayer.OnCompletionListener{
-    private final int NOTIFICATION_ID=100;
+
     private final String TAG = "MediaService";
     private final MediaMetadataCompat.Builder mMediaMetadataBuilder = new MediaMetadataCompat.Builder();
     private final PlaybackStateCompat.Builder mPlaybackStateCompat = new PlaybackStateCompat.Builder().setActions(
@@ -50,6 +41,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     private MediaPlayer mMediaPlayer;
     private Context mContext;
     private ImageProcessing mImageProcessing;
+    private NotificationHelper mNotificationHelper;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -59,6 +51,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
         mMediaSessionCompat.setCallback(mMediaSessionCallback);
         mMediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mImageProcessing= new ImageProcessing(mContext);
+        mNotificationHelper = new NotificationHelper(this,mContext,mMediaSessionCompat);
         initMediaPlayer();
     }
     private void initMediaPlayer(){
@@ -74,7 +67,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     public void onDestroy(){
         super.onDestroy();
         Log.d("OUR PROBLEM","DESTROY");
-        stopTHISSHIT();
+        prepareToStopService();
         mMediaSessionCompat.release();
         mMediaPlayer.release();
         Log.d("OUR PROBLEM", "DESROYED");
@@ -94,11 +87,10 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     public void unpausePlayer() {
         mMediaPlayer.start();
     }
-    private void stopTHISSHIT(){
+    private void prepareToStopService(){
         mMediaSessionCompat.setActive(false);
         mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1).build());
-        int currentState = PlaybackStateCompat.STATE_STOPPED;
-        refreshNotificationAndForegroundStatus(currentState);
+        mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_STOPPED);
     }
     public void seek(int posn) {
         mMediaPlayer.seekTo(posn);
@@ -152,76 +144,37 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
             Log.d(TAG, "MEDIA SESSION TRY TO PLAY");
             Song song = MusicRepository.getInstance().getCurrentSong();
             Log.d(TAG,"MEDIA PLAYER GET CURRENT POSITION " + mMediaPlayer.getCurrentPosition());
-            if (mMediaPlayer.getCurrentPosition()>1){
-                mMediaPlayer.seekTo(mMediaPlayer.getCurrentPosition());
-            }
             playSong((int) song.getSongId());
             updateMetadataFromTrack(song);
             mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PLAYING,PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
-            refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_PLAYING);
-            /*
-            startService(new Intent(getApplicationContext(),MediaService.class));
-            Song song = MusicRepository.getInstance().getCurrentSong();
-            updateMetadataFromTrack(song);
-            int audioFocusResult = mAudioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-            if (audioFocusResult != AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-                return;
-            }
-            mMediaSessionCompat.setActive(true);
-            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PLAYING, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1).build());
-            registerReceiver(becomingNoisyReceiver, new IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY));
-            playSong((int) song.getSongId());
-            currentState=PlaybackStateCompat.STATE_PLAYING;
-            refreshNotificationAndForegroundStatus(currentState);*/
+            mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_PLAYING);
         }
         @Override
         public void onPause(){
             Log.d(TAG, "MEDIA SESSION TRY TO PAUSE");
             pausePlayer();
             mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PAUSED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
-            refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_PAUSED);
-            /*
-            mMediaPlayer.pause();
-            unregisterReceiver(becomingNoisyReceiver);
-            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PAUSED,PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());*/
+            mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_PAUSED);
         }
         @Override
         public void onStop(){
             Log.d("OUR PROBLEM", "MEDIA SESSION TRY TO STOP");
             mMediaPlayer.stop();
             mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_STOPPED,PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
-            /*
-            mMediaPlayer.stop();
-            Log.d("OUR PROBLEM", "PLAYER TRY TO STOP");
-            unregisterReceiver(becomingNoisyReceiver);
-            Log.d("OUR PROBLEM", "UNREGISTER RECEIVER");
-            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
-            Log.d("OUR PROBLEM", "SET PLAYBACK STATE");
-            currentState=PlaybackStateCompat.STATE_STOPPED;
-            Log.d("OUR PROBLEM", "CURRENT STATE STOP");
-            refreshNotificationAndForegroundStatus(currentState);
-            Log.d("OUR PROBLEM","REFRESH NOT AND FOREGROUND STATUS");
-            stopSelf();
-            Log.d("OUR PROBLEM", "STOP SELF");*/
+            mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_STOPPED);
         }
         @Override
         public void onSkipToNext() {
             Log.d(TAG, "MEDIA SESSION TRY TO SKIP TO NEXT");
-            /*
-            Song song = MusicRepository.getInstance().getNextSong();
-            updateMetadataFromTrack(song);
-            refreshNotificationAndForegroundStatus(currentState);
-            playSong((int) song.getSongId());*/
+            MusicRepository.getInstance().getNextSong();
+            onPlay();
         }
 
         @Override
         public void onSkipToPrevious() {
             Log.d(TAG, "MEDIA SESSION TRY TO SKIP TO PREVIOUS");
-            /*
-            Song song = MusicRepository.getInstance().getNextSong();
-            updateMetadataFromTrack(song);
-            refreshNotificationAndForegroundStatus(currentState);
-            playSong((int) song.getSongId());*/
+            MusicRepository.getInstance().getPrevSong();
+            onPlay();
         }
         private void updateMetadataFromTrack(Song pSong){
             final Uri sArtworkUri = Uri.parse(SongContract.SONG_ALBUM_ARTWORK_URI + pSong.getSongAlbumId());
@@ -233,6 +186,7 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
             mMediaSessionCompat.setMetadata(mMediaMetadataBuilder.build());
         }
     };
+    //TODO ADD LISTENER FOCUS AND BECOMING NOISY
     /*
     private AudioManager.OnAudioFocusChangeListener audioFocusChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
@@ -259,52 +213,4 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
             }
         }
     };*/
-    private void refreshNotificationAndForegroundStatus(int playbackState) {
-        Log.d(TAG,"REFRESH NOTIFICATION AND FOREGROUND STATUS");
-        switch (playbackState) {
-            case PlaybackStateCompat.STATE_PLAYING: {
-                NotificationManagerCompat.from(mContext).notify(2,getNotification(playbackState));
-                stopForeground(false);
-                break;
-            }
-            case PlaybackStateCompat.STATE_PAUSED: {
-                NotificationManagerCompat.from(mContext).notify(2,getNotification(playbackState));
-                stopForeground(false);
-                break;
-            }
-            default: {
-                stopForeground(true);
-                break;
-            }
-        }
-    }
-    private Notification getNotification(int playbackState) {
-        Log.d(TAG,"TRY TO GET NOTIFICATION");
-        NotificationCompat.Builder builder = MediaStyleHelper.from(this, mMediaSessionCompat);
-        builder.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, "PREVIOUS",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
-
-        if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
-            builder.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_pause, "PAUSE",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY_PAUSE)));
-        }
-        if (playbackState==PlaybackStateCompat.STATE_PAUSED){
-            builder.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_play, "PLAY",
-                    MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_PLAY_PAUSE)));
-        }
-        builder.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_next, "NEXT",
-                MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_SKIP_TO_NEXT)));
-        builder.setStyle(new NotificationCompat.MediaStyle()
-                .setShowActionsInCompactView(1)
-                .setShowCancelButton(true)
-                .setCancelButtonIntent(MediaButtonReceiver.buildMediaButtonPendingIntent(this, PlaybackStateCompat.ACTION_STOP))
-                .setMediaSession(mMediaSessionCompat.getSessionToken()));
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-        builder.setShowWhen(false);
-        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
-        builder.setOnlyAlertOnce(true);
-
-        return builder.build();
-    }
 }
