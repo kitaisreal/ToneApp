@@ -1,6 +1,5 @@
 package com.example.yetti.toneplayer.database;
 
-import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
 

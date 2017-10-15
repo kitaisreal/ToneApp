@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import com.example.yetti.toneplayer.R;
 import com.example.yetti.toneplayer.adapter.ArtistListAdapter;
-import com.example.yetti.toneplayer.adapter.SongListAdapter;
 import com.example.yetti.toneplayer.model.Artist;
 
 import java.util.ArrayList;
@@ -26,11 +25,11 @@ public class ArtistListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_song_list, container,false);
-        mSongList = new ArrayList<>();
+        mSongListFragment = new ArrayList<>();
         mLayoutManager = new LinearLayoutManager(getActivity());
         Bundle bundle = this.getArguments();
         if (bundle != null) {
-            mSongList = bundle.getParcelableArrayList("songs");
+            mSongListFragment = bundle.getParcelableArrayList("songs");
         }
         mRecyclerView = (RecyclerView) v.findViewById(R.id.list_songs);
         if (mRecyclerView!=null) {
@@ -40,13 +39,13 @@ public class ArtistListFragment extends Fragment {
 
                 @Override
                 public void onClick(View v) {
-                    MusicRepository.getInstance().setCurrentSongList(mSongList);
+                    MusicRepository.getInstance().setCurrentSongList(mSongListFragment);
                     int itemPosition=mRecyclerView.getChildLayoutPosition(v);
                     MusicRepository.getInstance().setCurrentPosition(itemPosition);
                     ((MainActivity)getActivity()).getMediaControllerCompat().getTransportControls().play();
                 }
             };
-            mSongListAdapter = new SongListAdapter(mSongList, getActivity().getApplicationContext(),mOnClickListener);
+            mSongListAdapter = new SongListAdapter(mSongListFragment, getActivity().getApplicationContext(),mOnClickListener);
             mRecyclerView.setAdapter(mSongListAdapter);
         }
         return v;
@@ -54,15 +53,9 @@ public class ArtistListFragment extends Fragment {
      */
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
-        List<Artist> artistList = new ArrayList<>();
-        artistList.add(new Artist("Eminem","ALBUMNAME",10));
-        artistList.add(new Artist("Sum 41","ALBUMNAME",10));
-        artistList.add(new Artist("Beastie Boys","ALBUMNAME",10));
-        artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
-        artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
-        artistList.add(new Artist("ARTISTNAME","ALBUMNAME",10));
+    public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, final Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
+        final List<Artist> artistList = new ArrayList<>();
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView = (RecyclerView) view.findViewById(R.id.artist_list);
         if (mRecyclerView!=null){

@@ -1,15 +1,12 @@
 package com.example.yetti.toneplayer.database;
 
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
 import com.example.yetti.toneplayer.database.impl.DBServiceImpl;
-import com.example.yetti.toneplayer.threadmanager.ThreadsManager;
 
-//TODO FIELDS SERVICES
 public class DatabaseManager {
     private int mOpenCounter;
     private static DBToneHelper mDatabaseHelper;
@@ -17,7 +14,7 @@ public class DatabaseManager {
     private static AsyncDBServiceImpl mAsyncDBService;
     private static volatile DatabaseManager sInstance;
 
-    public static synchronized void initializeInstance(DBToneHelper helper) {
+    public static synchronized void initializeInstance(final DBToneHelper helper) {
         Log.d("DBMANAGER","INITIALIZEINSTANCe");
         if (sInstance == null) {
             sInstance = new DatabaseManager();

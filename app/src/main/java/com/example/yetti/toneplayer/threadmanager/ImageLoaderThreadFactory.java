@@ -8,8 +8,8 @@ import java.util.concurrent.ThreadFactory;
 public class ImageLoaderThreadFactory implements ThreadFactory {
 
     @Override
-    public Thread newThread(@NonNull Runnable r) {
+    public Thread newThread(@NonNull final Runnable pRunnable) {
         Log.d("THREAD FACTORY", "CREATE IMAGE LOADER NETWORK THREAD");
-        return new ImageLoaderThread(r);
+        return new ImageLoaderThread(pRunnable);
     }
 }

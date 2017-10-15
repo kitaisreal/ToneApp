@@ -29,7 +29,7 @@ public class ImageProcessing {
         return decodeBitmap(pUrlLink,-1,-1);
     }
     private Bitmap decodeBitmap(final String pUrlLink, final int pXWidth, final int pYHight){
-        if (pUrlLink.toLowerCase().contains(HttpContract.HTTP)|| pUrlLink.toLowerCase().contains(HttpContract.HTTP)){
+        if (pUrlLink.toLowerCase().contains(HttpContract.HTTP)|| pUrlLink.toLowerCase().contains(HttpContract.HTTPS)){
             return getBitmapFromBytes(getBytesFromUrl(pUrlLink));
         }
         if (pUrlLink.toLowerCase().contains("content")){

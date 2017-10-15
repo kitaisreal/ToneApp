@@ -14,10 +14,8 @@ import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
 import com.example.yetti.toneplayer.imageLoader.ImageLoader;
 import com.example.yetti.toneplayer.service.MediaService;
-import com.example.yetti.toneplayer.service.SongService;
 
 public class CoreApplication extends Application {
-    private SongService.myBinder mMyBinder;
     private Intent bindIntent;
     private boolean boundToService=false;
     private ServiceConnection sConn;

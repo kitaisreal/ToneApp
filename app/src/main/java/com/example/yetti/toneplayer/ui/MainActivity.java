@@ -37,12 +37,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
     boolean bound = false;
     android.app.FragmentTransaction mFragmentTransaction;
-    SongListFragment mSongList;
+    SongListFragment mSongListFragment;
     ArtistListFragment mArtistListFragment;
     private DrawerLayout mDrawerLayout;
     private ContentHelper mContentHelper;
     private CoreApplication mMainApplication;
     private AsyncDBServiceImpl mSongDBService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,69 +53,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setupNavBarToolbar();
         mArtistListFragment = new ArtistListFragment();
         mSongDBService = mMainApplication.getSongDBService();
-        mSongDBService.getSongsByArtist("Sum 41", new ICallbackResult<List<Song>>() {
-
-            @Override
-            public void onSuccess(List<Song> pSongList) {
-                System.out.println("GET SONGS BY ARTIST");
-                for (Song s:pSongList){
-                    System.out.println(s.getSongAlbum() +" " + s.getSongId() +" " +s.getSongName()+" ");
-                }
-            }
-
-            @Override
-            public void onError(Exception e) {
-                e.printStackTrace();
-            }
-        });
         if (checkPermissionREAD_EXTERNAL_STORAGE(this)) {
-            mContentHelper.getAsyncSongsFromDevice(new ICallbackResult<List<Song>>() {
+            mContentHelper.initApp(new ICallbackResult<Boolean>() {
+
                 @Override
-                public void onSuccess(final List<Song> songs) {
-                    mSongDBService.addSongs(songs, new ICallbackResult<Boolean>() {
+                public void onSuccess(final Boolean pBoolean) {
+                    mSongDBService.getAllSongs(new ICallbackResult<List<Song>>() {
+
                         @Override
-                        public void onSuccess(Boolean aBoolean) {
-                            setSongListFragment(songs);
+                        public void onSuccess(final List<Song> pSongList) {
+                            setSongListFragment(pSongList);
                             replaceSongListFragment();
                         }
 
                         @Override
-                        public void onError(Exception e) {
-
+                        public void onError(final Exception e) {
+                            Log.d("MAINACTIVITY","GET SONGS FROM DB EXCEPTION");
                         }
                     });
                 }
 
                 @Override
-
                 public void onError(Exception e) {
-
+                    Log.d("MAINACTIVITY","INIT APP EXCEPTION");
                 }
             });
         }
     }
-    private void setSongListFragment(List<Song> pSongList){
-        Bundle bundle = new Bundle();
+
+    private void setSongListFragment(final List<Song> pSongList) {
+        final Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("songs", (ArrayList<? extends Parcelable>) pSongList);
-        mSongList = new SongListFragment();
-        mSongList.setArguments(bundle);
+        mSongListFragment = new SongListFragment();
+        mSongListFragment.setArguments(bundle);
     }
+
     private void replaceSongListFragment() {
         mFragmentTransaction = getFragmentManager().beginTransaction();
-        mFragmentTransaction.replace(R.id.frgmCont, mSongList);
+        mFragmentTransaction.replace(R.id.frgmCont, mSongListFragment);
         mFragmentTransaction.commit();
     }
-    private void setupNavBarToolbar(){
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+    private void setupNavBarToolbar() {
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+        final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        final NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
     //TODO FIX BUG
     @Override
     protected void onDestroy() {
@@ -123,10 +114,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mMainApplication.unbindServiceOfApplication();
         Log.d("OUR PROBLEM", "UNBIND SERVICE FROM MAIN ACTIVITY");
     }
+
     public boolean checkPermissionREAD_EXTERNAL_STORAGE(
             final Context context) {
-        int currentAPIVersion = Build.VERSION.SDK_INT;
-        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+        final int currentAPIVersion = Build.VERSION.SDK_INT;
+        if (currentAPIVersion >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -151,34 +143,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }
     }
-    public boolean getMusicServiceBound(){
+
+    public boolean getMusicServiceBound() {
         return mMainApplication.getMediaServiceBound();
     }
-    public MediaControllerCompat getMediaControllerCompat(){
-        Log.d("ACTIVITY",""+mMainApplication.getMediaControllerCompat());
+
+    public MediaControllerCompat getMediaControllerCompat() {
+        Log.d("ACTIVITY", "" + mMainApplication.getMediaControllerCompat());
         return mMainApplication.getMediaControllerCompat();
     }
+
     public void showDialog(final String msg, final Context context,
                            final String permission) {
-        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+        final AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
         alertBuilder.setCancelable(true);
         alertBuilder.setTitle("Permission necessary");
         alertBuilder.setMessage(msg + " permission is necessary");
         alertBuilder.setPositiveButton(android.R.string.yes,
                 new DialogInterface.OnClickListener() {
+
                     public void onClick(DialogInterface dialog, int which) {
                         ActivityCompat.requestPermissions((Activity) context,
                                 new String[]{permission},
                                 MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
                     }
                 });
-        AlertDialog alert = alertBuilder.create();
+        final AlertDialog alert = alertBuilder.create();
         alert.show();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(final int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -190,30 +186,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         grantResults);
         }
     }
+
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
     }
+
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
+    public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
+        final int id = item.getItemId();
         if (id == R.id.all_songs) {
             mSongDBService.getAllSongs(new ICallbackResult<List<Song>>() {
 
                 @Override
-                public void onSuccess(List<Song> pSongList) {
+                public void onSuccess(final List<Song> pSongList) {
                     setSongListFragment(pSongList);
                     replaceSongListFragment();
                 }
 
                 @Override
-                public void onError(Exception e) {
-                    Log.d("TAG","ERROR");
+                public void onError(final Exception ex) {
+                    Log.d("TAG", "ERROR");
                 }
             });
         } else if (id == R.id.songs_artists) {
@@ -225,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else if (id == R.id.about) {
 
         }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

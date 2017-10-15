@@ -8,36 +8,165 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
+import com.example.yetti.toneplayer.database.DatabaseManager;
+import com.example.yetti.toneplayer.database.impl.DBServiceImpl;
+import com.example.yetti.toneplayer.json.JsonParserImpl;
+import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
+import com.example.yetti.toneplayer.network.HttpClient;
+import com.example.yetti.toneplayer.network.HttpContract;
+import com.example.yetti.toneplayer.network.Request;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class ContentHelper {
+
     private Context mContext;
+    private JsonParserImpl mJsonParserImpl;
+    private HttpClient mHttpClient;
+    private List<Artist> mArtistList;
     private final String TAG = "CONTENT HELPER";
-    public ContentHelper(Context pContext){
-        mContext=pContext;
+
+    public ContentHelper(final Context pContext) {
+        mContext = pContext;
+        mJsonParserImpl = new JsonParserImpl();
+        mHttpClient = new HttpClient();
     }
-    public void getAsyncSongsFromDevice(final ICallbackResult<List<Song>> pListICallbackResult){
+    public void initApp(final ICallbackResult<Boolean> pBooleanICallbackResult){
+        initSongs(new ICallbackResult<Boolean>() {
+
+            @Override
+            public void onSuccess(Boolean pBoolean) {
+                pBooleanICallbackResult.onSuccess(true);
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+        initArtists(new ICallbackResult<Boolean>() {
+
+            @Override
+            public void onSuccess(Boolean pBoolean) {
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+    public void initArtists(final ICallbackResult<Boolean> pBooleanICallbackResult) {
+        DatabaseManager.getInstance().getAsyncDBService().getArtists(new ICallbackResult<List<Artist>>() {
+
+            @Override
+            public void onSuccess(List<Artist> pArtists) {
+                getInitialArtistList(pArtists, new ICallbackResult<List<Artist>>() {
+
+                    @Override
+                    public void onSuccess(List<Artist> pArtists) {
+                        mArtistList=pArtists;
+                        pBooleanICallbackResult.onSuccess(true);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        e.printStackTrace();
+                        pBooleanICallbackResult.onError(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
+    private void getInitialArtistList(final List<Artist> pArtistList, final ICallbackResult<List<Artist>> pListICallbackResult){
+
+        Runnable runnable = new Runnable() {
+
+            @Override
+            public void run() {
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                for (int i = 0; i < pArtistList.size(); i++) {
+                    final Request request = new Request.RequestBuilder(HttpContract.GET_ARTIST + pArtistList.get(i).getArtistName()).
+                            headers(headers).
+                            method(HttpContract.GET_METHOD).build();
+                    String result = mHttpClient.createRequest(request);
+                    Artist convertedFromResultArtist = mJsonParserImpl.convertJsonToArtist(result);
+                    if (convertedFromResultArtist!=null && Objects.equals(convertedFromResultArtist.getArtistName(), pArtistList.get(i).getArtistName())){
+                        pArtistList.get(i).setArtistGenre(convertedFromResultArtist.getArtistGenre());
+                        pArtistList.get(i).setArtistArtUrl(convertedFromResultArtist.getArtistArtUrl());
+                    }
+
+                }
+                System.out.println("FINAL ARTIST LIST");
+                for (Artist artist:pArtistList){
+                    System.out.println(artist.getArtistName() + " " + artist.getSongCount() + " " + artist.getArtistGenre() + " " + artist.getArtistArtUrl());
+                }
+                pListICallbackResult.onSuccess(pArtistList);
+            }
+        };
+        new Thread(runnable).start();
+
+    }
+    public void initSongs(final ICallbackResult<Boolean> pBooleanICallbackResult) {
+        getAsyncSongsFromDevice(new ICallbackResult<List<Song>>() {
+
+            @Override
+            public void onSuccess(List<Song> pSongList) {
+
+                DatabaseManager.getInstance().getAsyncDBService().addSongs(pSongList, new ICallbackResult<Boolean>() {
+
+                    @Override
+                    public void onSuccess(Boolean pBoolean) {
+                        pBooleanICallbackResult.onSuccess(pBoolean);
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        pBooleanICallbackResult.onError(e);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void getAsyncSongsFromDevice(final ICallbackResult<List<Song>> pListICallbackResult) {
         new Runnable() {
+
             @Override
             public void run() {
                 try {
-                    for (Song song:getSongsFromDevice(mContext)){
+                    for (Song song : getSongsFromDevice(mContext)) {
                         System.out.println(song.getSongId() + " " + song.getSongAlbum());
                     }
                     pListICallbackResult.onSuccess(getSongsFromDevice(mContext));
-                }
-                catch (Exception ex){
+                } catch (Exception ex) {
                     Exception exception = new Exception(TAG + "ASYNC GET SONGS FROM DEVICE EX");
                     pListICallbackResult.onError(exception);
                     Log.d(TAG, "ASYNC GET SONGS FROM DEVICE EX");
                 }
             }
         }.run();
-    };
-    public List<Song> getSongsFromDevice(Context pContext){
+    }
+
+    ;
+
+    private List<Song> getSongsFromDevice(Context pContext) {
         System.out.println("GET SONGS FROM DEVICE");
         List<Song> songsFromDeviceList = new ArrayList<>();
         ContentResolver musicResolver = pContext.getContentResolver();
@@ -60,11 +189,13 @@ public class ContentHelper {
                 long thisAlbumId = musicCursor.getLong(albumId);
                 String thisALbum = musicCursor.getString(songAlbum);
                 long thisSongDuration = musicCursor.getLong(songDuration);
-                songsFromDeviceList.add(new Song(thisId, thisArtist, thisTitle,thisALbum,thisAlbumId,0, -1,0,thisSongDuration));
+                songsFromDeviceList.add(new Song(thisId, thisArtist, thisTitle, thisALbum, thisAlbumId, 0, -1, 0, thisSongDuration));
             }
             while (musicCursor.moveToNext());
         }
-        musicCursor.close();
+        if (musicCursor != null) {
+            musicCursor.close();
+        }
         return songsFromDeviceList;
     }
 }

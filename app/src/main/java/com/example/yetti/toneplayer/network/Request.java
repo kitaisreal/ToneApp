@@ -2,40 +2,40 @@ package com.example.yetti.toneplayer.network;
 
 import java.util.Map;
 
-public class Request {
+public final class Request {
 
-    private Map<String, String> mHeaders;
-    private String mUrl;
-    private String mMethod;
-    private String mBody;
+    private final Map<String, String> mHeaders;
+    private final String mUrl;
+    private final String mMethod;
+    private final String mBody;
 
-    public Request(final RequestBuilder pRequestBuilder) {
+    private Request(final RequestBuilder pRequestBuilder) {
         this.mHeaders = pRequestBuilder.mHeaders;
         this.mUrl = pRequestBuilder.mUrl;
         this.mMethod = pRequestBuilder.mMethod;
         this.mBody = pRequestBuilder.mBody;
     }
 
-    public String getUrl() {
+    String getUrl() {
         return mUrl;
     }
 
-    public String getMethod() {
+    String getMethod() {
         return mMethod;
     }
 
-    public String getBody() {
+    String getBody() {
         return mBody;
     }
 
-    public Map<String, String> getHeaders() {
+    Map<String, String> getHeaders() {
         return mHeaders;
     }
 
     public static class RequestBuilder {
 
         private Map<String, String> mHeaders;
-        private String mUrl;
+        private final String mUrl;
         private String mMethod;
         private String mBody;
 
@@ -48,12 +48,12 @@ public class Request {
             return this;
         }
 
-        public RequestBuilder method(String pMethod) {
+        public RequestBuilder method(final String pMethod) {
             this.mMethod = pMethod;
             return this;
         }
 
-        public RequestBuilder body(String pBody) {
+        public RequestBuilder body(final String pBody) {
             this.mBody = pBody;
             return this;
         }

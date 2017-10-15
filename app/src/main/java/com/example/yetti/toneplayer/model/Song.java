@@ -18,7 +18,7 @@ public class Song implements Parcelable {
     public Song() {
 
     }
-    protected Song(Parcel pIn) {
+    protected Song(final Parcel pIn) {
         mSongId = pIn.readLong();
         mSongArtist = pIn.readString();
         mSongName = pIn.readString();
@@ -33,18 +33,18 @@ public class Song implements Parcelable {
     public static final Creator<Song> CREATOR = new Creator<Song>() {
 
         @Override
-        public Song createFromParcel(Parcel in) {
+        public Song createFromParcel(final Parcel in) {
             return new Song(in);
         }
 
         @Override
-        public Song[] newArray(int size) {
+        public Song[] newArray(final int size) {
             return new Song[size];
         }
     };
 
-    public Song(long song_id, String song_artist, String song_name, String song_album, long song_album_id,
-                int song_weight, long song_playlist_id, int song_favourite, long song_duration) {
+    public Song(final long song_id, final String song_artist, final String song_name, final String song_album, final long song_album_id,
+                final int song_weight, final long song_playlist_id, final int song_favourite, final long song_duration) {
         this.mSongId = song_id;
         this.mSongArtist = song_artist;
         this.mSongName = song_name;
@@ -60,7 +60,7 @@ public class Song implements Parcelable {
         return mSongId;
     }
 
-    public void setSongId(long pSongId) {
+    public void setSongId(final long pSongId) {
         this.mSongId = pSongId;
     }
 
@@ -68,7 +68,7 @@ public class Song implements Parcelable {
         return mSongWeight;
     }
 
-    public void setSongWeight(int pSongWeight) {
+    public void setSongWeight(final int pSongWeight) {
         this.mSongWeight = pSongWeight;
     }
 
@@ -76,7 +76,7 @@ public class Song implements Parcelable {
         return mSongArtist;
     }
 
-    public void setSongArtist(String pSongArtist) {
+    public void setSongArtist(final String pSongArtist) {
         this.mSongArtist = pSongArtist;
     }
 
@@ -84,7 +84,7 @@ public class Song implements Parcelable {
         return mSongName;
     }
 
-    public void setSongName(String pSongName) {
+    public void setSongName(final String pSongName) {
         this.mSongName = pSongName;
     }
 
@@ -94,7 +94,7 @@ public class Song implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel pDest, int pFlags) {
+    public void writeToParcel(final Parcel pDest, final int pFlags) {
         pDest.writeLong(mSongId);
         pDest.writeString(mSongName);
         pDest.writeString(mSongArtist);
@@ -110,7 +110,7 @@ public class Song implements Parcelable {
         return mSongPlaylistId;
     }
 
-    public void setSongPlaylist(long pSongPlaylist) {
+    public void setSongPlaylist(final long pSongPlaylist) {
         this.mSongPlaylistId = pSongPlaylist;
     }
 
@@ -118,7 +118,7 @@ public class Song implements Parcelable {
         return mSongAlbum;
     }
 
-    public void setSongAlbum(String pSongAlbum) {
+    public void setSongAlbum(final String pSongAlbum) {
         this.mSongAlbum = pSongAlbum;
     }
 
@@ -126,7 +126,7 @@ public class Song implements Parcelable {
         return mSongAlbumId;
     }
 
-    public void setSongAlbumId(long pSongAlbumId) {
+    public void setSongAlbumId(final long pSongAlbumId) {
         this.mSongAlbumId = pSongAlbumId;
     }
 
@@ -134,7 +134,7 @@ public class Song implements Parcelable {
         return mSongFavourite;
     }
 
-    public void setSongFavourite(int pSongFavourite) {
+    public void setSongFavourite(final int pSongFavourite) {
         this.mSongFavourite = pSongFavourite;
     }
 
@@ -142,7 +142,7 @@ public class Song implements Parcelable {
         return mSongDuration;
     }
 
-    public void setSongDuration(long pSongDuration) {
+    public void setSongDuration(final long pSongDuration) {
         this.mSongDuration = pSongDuration;
     }
 }

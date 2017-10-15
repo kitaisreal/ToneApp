@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MusicRepository {
+public final class MusicRepository {
     private List<Song> mCurrentSongList;
     private List<Song> mAlreadyPlayedSongList;
     private String mSongPlayMode;
@@ -51,7 +51,7 @@ public class MusicRepository {
         return mCurrentSongList;
     }
 
-    public void setCurrentSongList(List<Song> pCurrentSongList) {
+    public void setCurrentSongList(final List<Song> pCurrentSongList) {
         mCurrentSongList = pCurrentSongList;
     }
 
@@ -68,10 +68,10 @@ public class MusicRepository {
         }
         return mCurrentSongList.get(currentPosition);
     }
-    public void setSongPlayMode(String pSongPlayMode){
+    public void setSongPlayMode(final String pSongPlayMode){
         mSongPlayMode=pSongPlayMode;
     }
-    public void setCurrentPosition(int pCurrentPosition){
+    public void setCurrentPosition(final int pCurrentPosition){
         this.currentPosition=pCurrentPosition;
     }
 }

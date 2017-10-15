@@ -1,14 +1,13 @@
 package com.example.yetti.toneplayer.threadmanager;
 
-
 import android.util.Log;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class ThreadsManager {
-    public static final int NUMBER_OF_CORES = Runtime.getRuntime().availableProcessors();
+public final class ThreadsManager {
+
     private final ThreadPoolExecutor mForDiskLoaderTasks;
     private final ThreadPoolExecutor mForImageLoaderTasks;
     private static volatile ThreadsManager sInstance;
@@ -27,7 +26,7 @@ public class ThreadsManager {
     }
 
     private ThreadsManager() {
-        Log.d("ThreadsManager","INITIALIZATION");
+        Log.d("ThreadsManager", "INITIALIZATION");
         mForDiskLoaderTasks = new ThreadPoolExecutor(
                 1,
                 1,

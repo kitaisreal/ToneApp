@@ -16,31 +16,30 @@ import java.net.URL;
 
 import javax.net.ssl.HttpsURLConnection;
 
-
 public class HttpClient {
     private final String TAG = "HTTP CLIENT";
     public void createAsyncRequest(final Request pRequest, final ICallbackResult<String> pICallbackResult) {
-        new Runnable() {
+        new Thread(new Runnable() {
 
             @Override
             public void run() {
                 try {
-                    String response = createRequest(pRequest);
+                    final String response = createRequest(pRequest);
                     pICallbackResult.onSuccess(response);
-                } catch (Exception e) {
+                } catch (final Exception ex) {
                     Log.d(TAG, "CREATE ASYNC REQUEST EXCEPTION");
                     if (pICallbackResult != null) {
-                        Exception exception = new Exception(TAG + "CREATE ASYNC REQUEST EXCEPTION");
+                        final Exception exception = new Exception(TAG + "CREATE ASYNC REQUEST EXCEPTION");
                         pICallbackResult.onError(exception);
                     }
                 }
             }
-        }.run();
+        }).start();
     }
 
-    private String createRequest(final Request pRequest) {
+    public String createRequest(final Request pRequest) {
         HttpURLConnection URLConnection = null;
-        URL url;
+        final URL url;
         try {
             url = new URL(pRequest.getUrl());
             if (url.toString().toLowerCase().contains(HttpContract.HTTP)) {
@@ -51,13 +50,13 @@ public class HttpClient {
             }
             if (URLConnection != null) {
                 setConnectionProperties(URLConnection, pRequest);
-                InputStream in = new BufferedInputStream(URLConnection.getInputStream());
-                ByteArrayOutputStream result = new ByteArrayOutputStream();
-                OutputStream outputStream = new BufferedOutputStream(result);
+                final InputStream in = new BufferedInputStream(URLConnection.getInputStream());
+                final ByteArrayOutputStream result = new ByteArrayOutputStream();
+                final OutputStream outputStream = new BufferedOutputStream(result);
                 Utils.copyInputStreamInOutputStream(in, outputStream);
                 return result.toString(HttpContract.UTF_8);
             }
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             Log.d(TAG, "CREATE REQUEST EXCEPTION");
         } finally {
             if (URLConnection != null) {
@@ -67,11 +66,11 @@ public class HttpClient {
         return null;
     }
 
-    private void setConnectionProperties(HttpURLConnection pHttpURLConnection, Request pRequest) {
+    private void setConnectionProperties(final HttpURLConnection pHttpURLConnection, final Request pRequest) {
         try {
             pHttpURLConnection.setRequestMethod(pRequest.getMethod());
             if (pRequest.getHeaders() != null) {
-                for (String s : pRequest.getHeaders().keySet()) {
+                for (final String s : pRequest.getHeaders().keySet()) {
                     pHttpURLConnection.setRequestProperty(s, pRequest.getHeaders().get(s));
                 }
             }
@@ -79,10 +78,10 @@ public class HttpClient {
                 pHttpURLConnection.setDoOutput(true);
                 pHttpURLConnection.setDoInput(true);
                 final OutputStream stream = pHttpURLConnection.getOutputStream();
-                InputStream inputStream = new ByteArrayInputStream(pRequest.getBody().getBytes(HttpContract.UTF_8));
+                final InputStream inputStream = new ByteArrayInputStream(pRequest.getBody().getBytes(HttpContract.UTF_8));
                 Utils.copyInputStreamInOutputStream(inputStream, stream);
             }
-        } catch (Exception e) {
+        } catch (final Exception ex) {
             Log.d(TAG, "SET CONNECTION PROPERTIES EXCEPTION");
         }
     }

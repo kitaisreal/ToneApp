@@ -23,13 +23,13 @@ import com.example.yetti.toneplayer.musicrepository.MusicRepository;
 
 import java.io.IOException;
 
-public class MediaService extends Service implements  MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
-        MediaPlayer.OnCompletionListener{
+public class MediaService extends Service implements MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener,
+        MediaPlayer.OnCompletionListener {
 
     private final String TAG = "MediaService";
     private final MediaMetadataCompat.Builder mMediaMetadataBuilder = new MediaMetadataCompat.Builder();
     private final PlaybackStateCompat.Builder mPlaybackStateCompat = new PlaybackStateCompat.Builder().setActions(
-                    PlaybackStateCompat.ACTION_PLAY
+            PlaybackStateCompat.ACTION_PLAY
                     | PlaybackStateCompat.ACTION_STOP
                     | PlaybackStateCompat.ACTION_PAUSE
                     | PlaybackStateCompat.ACTION_PLAY_PAUSE
@@ -42,20 +42,22 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     private Context mContext;
     private ImageProcessing mImageProcessing;
     private NotificationHelper mNotificationHelper;
+
     @Override
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        mMediaSessionCompat = new MediaSessionCompat(this,TAG);
+        mMediaSessionCompat = new MediaSessionCompat(this, TAG);
         mMediaSessionCompat.setCallback(mMediaSessionCallback);
         mMediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mMediaSessionCompat.setMediaButtonReceiver(null);
-        mImageProcessing= new ImageProcessing(mContext);
-        mNotificationHelper = new NotificationHelper(this,mContext,mMediaSessionCompat);
+        mImageProcessing = new ImageProcessing(mContext);
+        mNotificationHelper = new NotificationHelper(this, mContext, mMediaSessionCompat);
         initMediaPlayer();
     }
-    private void initMediaPlayer(){
+
+    private void initMediaPlayer() {
         mMediaPlayer = new MediaPlayer();
         mMediaPlayer.setWakeMode(mContext,
                 PowerManager.PARTIAL_WAKE_LOCK);
@@ -64,14 +66,16 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
         mMediaPlayer.setOnCompletionListener(this);
         mMediaPlayer.setOnErrorListener(this);
     }
+
     @Override
-    public void onDestroy(){
+    public void onDestroy() {
         super.onDestroy();
-        Log.d("OUR PROBLEM","DESTROY");
+        Log.d("OUR PROBLEM", "DESTROY");
         mMediaSessionCompat.release();
         mMediaPlayer.release();
         Log.d("OUR PROBLEM", "DESROYED");
     }
+
     public int getDuration() {
         return mMediaPlayer.getDuration();
     }
@@ -87,88 +91,99 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
     public void unpausePlayer() {
         mMediaPlayer.start();
     }
-    private void prepareToStopService(){
+
+    private void prepareToStopService() {
         mMediaSessionCompat.setActive(false);
         mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1).build());
         mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_STOPPED);
     }
-    public void seek(int posn) {
+
+    public void seek(final int posn) {
         mMediaPlayer.seekTo(posn);
-    }
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        MediaButtonReceiver.handleIntent(mMediaSessionCompat, intent);
-        return super.onStartCommand(intent, flags, startId);
-    }
-    @Override
-    public IBinder onBind(Intent intent) {
-        return new MediaServiceBinder();
-    }
-    @Override
-    public boolean onUnbind(Intent intent) {
-        Log.d("OUR PROBLEM","ON UNBIND");
-        prepareToStopService();
-        return true;
-    }
-    @Override
-    public void onCompletion(MediaPlayer mp) {
     }
 
     @Override
-    public boolean onError(MediaPlayer mp, int what, int extra) {
+    public int onStartCommand(final Intent intent, final int flags, final int startId) {
+        MediaButtonReceiver.handleIntent(mMediaSessionCompat, intent);
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public IBinder onBind(final Intent intent) {
+        return new MediaServiceBinder();
+    }
+
+    @Override
+    public boolean onUnbind(final Intent intent) {
+        Log.d("OUR PROBLEM", "ON UNBIND");
+        prepareToStopService();
+        return true;
+    }
+
+    @Override
+    public void onCompletion(final MediaPlayer mp) {
+    }
+
+    @Override
+    public boolean onError(final MediaPlayer mp, final int what, final int extra) {
         return false;
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
+    public void onPrepared(final MediaPlayer mp) {
         mp.start();
     }
-    public class MediaServiceBinder extends Binder{
-        public MediaSessionCompat.Token getMediaSessionToken(){
+
+    public class MediaServiceBinder extends Binder {
+
+        public MediaSessionCompat.Token getMediaSessionToken() {
             return mMediaSessionCompat.getSessionToken();
         }
     }
-    private void playSong(int id){
+
+    private void playSong(final int id) {
         mMediaPlayer.reset();
-        Uri trackUri = ContentUris.withAppendedId(
-                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,id);
+        final Uri trackUri = ContentUris.withAppendedId(
+                android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id);
         try {
             mMediaPlayer.setDataSource(getApplicationContext(), trackUri);
             mMediaPlayer.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (final IOException ex) {
+            Log.d(TAG, "PLAY SONG EXCEPTION");
         }
     }
-    private MediaSessionCompat.Callback mMediaSessionCallback = new MediaSessionCompat.Callback() {
+
+    private final MediaSessionCompat.Callback mMediaSessionCallback = new MediaSessionCompat.Callback() {
+
         @Override
-        public void onPlay(){
+        public void onPlay() {
             Log.d(TAG, "MEDIA SESSION TRY TO PLAY");
-            startService(new Intent(mContext,MediaService.class));
-            Song song = MusicRepository.getInstance().getCurrentSong();
-            Log.d(TAG,"MEDIA PLAYER GET CURRENT POSITION " + mMediaPlayer.getCurrentPosition());
+            startService(new Intent(mContext, MediaService.class));
+            final Song song = MusicRepository.getInstance().getCurrentSong();
+            Log.d(TAG, "MEDIA PLAYER GET CURRENT POSITION " + mMediaPlayer.getCurrentPosition());
             playSong((int) song.getSongId());
             updateMetadataFromTrack(song);
-            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PLAYING,PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
+            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PLAYING, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1).build());
             mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_PLAYING);
         }
+
         @Override
-        public void onPause(){
+        public void onPause() {
             Log.d(TAG, "MEDIA SESSION TRY TO PAUSE");
             pausePlayer();
-            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PAUSED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
+            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_PAUSED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1).build());
             mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_PAUSED);
         }
-        public int getDuration(){
-            return 5;
-        }
+
         @Override
-        public void onStop(){
+        public void onStop() {
             Log.d("OUR PROBLEM", "MEDIA SESSION TRY TO STOP");
             mMediaPlayer.stop();
-            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_STOPPED,PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN,1).build());
+            mMediaSessionCompat.setPlaybackState(mPlaybackStateCompat.setState(PlaybackStateCompat.STATE_STOPPED, PlaybackStateCompat.PLAYBACK_POSITION_UNKNOWN, 1).build());
             mNotificationHelper.refreshNotificationAndForegroundStatus(PlaybackStateCompat.STATE_STOPPED);
             stopSelf();
         }
+
         @Override
         public void onSkipToNext() {
             Log.d(TAG, "MEDIA SESSION TRY TO SKIP TO NEXT");
@@ -182,7 +197,8 @@ public class MediaService extends Service implements  MediaPlayer.OnPreparedList
             MusicRepository.getInstance().getPrevSong();
             onPlay();
         }
-        private void updateMetadataFromTrack(Song pSong){
+
+        private void updateMetadataFromTrack(final Song pSong) {
             final Uri sArtworkUri = Uri.parse(SongContract.SONG_ALBUM_ARTWORK_URI + pSong.getSongAlbumId());
             mMediaMetadataBuilder.putBitmap(MediaMetadataCompat.METADATA_KEY_ART, mImageProcessing.decodeBitmap(sArtworkUri.toString()));
             mMediaMetadataBuilder.putString(MediaMetadataCompat.METADATA_KEY_TITLE, pSong.getSongName());

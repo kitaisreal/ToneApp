@@ -5,30 +5,35 @@ import android.os.Parcelable;
 
 public class Artist implements Parcelable {
     private String mArtistName;
-    private String mAlbumName;
     private long mSongCount;
+    private String mArtistArtUrl;
+    private String mArtistGenre;
 
-    public Artist(String pArtistName, String pAlbumName, long pSongCount) {
+    public Artist(final String pArtistName, final long pSongCount, final String pArtistArtUrl, final String pArtistGenre ) {
         this.mArtistName = pArtistName;
         this.mSongCount = pSongCount;
-        this.mAlbumName=pAlbumName;
+        this.mArtistArtUrl = pArtistArtUrl;
+        this.mArtistGenre = pArtistGenre;
     }
+    public Artist(){
 
-    protected Artist(Parcel in) {
+    }
+    protected Artist(final Parcel in) {
         mArtistName = in.readString();
-        mAlbumName = in.readString();
         mSongCount = in.readLong();
+        mArtistArtUrl = in.readString();
+        mArtistGenre = in.readString();
     }
 
     public static final Creator<Artist> CREATOR = new Creator<Artist>() {
 
         @Override
-        public Artist createFromParcel(Parcel in) {
+        public Artist createFromParcel(final Parcel in) {
             return new Artist(in);
         }
 
         @Override
-        public Artist[] newArray(int size) {
+        public Artist[] newArray(final int size) {
             return new Artist[size];
         }
     };
@@ -37,7 +42,7 @@ public class Artist implements Parcelable {
         return mArtistName;
     }
 
-    public void setArtistName(String pArtistName) {
+    public void setArtistName(final String pArtistName) {
         mArtistName = pArtistName;
     }
 
@@ -45,7 +50,7 @@ public class Artist implements Parcelable {
         return mSongCount;
     }
 
-    public void setSongCount(long pSongCount) {
+    public void setSongCount(final long pSongCount) {
         mSongCount = pSongCount;
     }
 
@@ -55,10 +60,28 @@ public class Artist implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(final Parcel dest, final int flags) {
 
         dest.writeString(mArtistName);
-        dest.writeString(mAlbumName);
         dest.writeLong(mSongCount);
+        dest.writeString(mArtistArtUrl);
+        dest.writeString(mArtistGenre);
+    }
+
+
+    public String getArtistArtUrl() {
+        return mArtistArtUrl;
+    }
+
+    public void setArtistArtUrl(final String pArtistArtUrl) {
+        mArtistArtUrl = pArtistArtUrl;
+    }
+
+    public String getArtistGenre() {
+        return mArtistGenre;
+    }
+
+    public void setArtistGenre(final String pArtistGenre) {
+        mArtistGenre = pArtistGenre;
     }
 }

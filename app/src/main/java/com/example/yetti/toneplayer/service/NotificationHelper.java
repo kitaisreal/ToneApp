@@ -17,47 +17,43 @@ import android.util.Log;
 import com.example.yetti.toneplayer.R;
 
 public class NotificationHelper {
-    private Context mContext;
+
+    public static final int ID = 404;
+    private final Context mContext;
     private final String TAG="NOTIFICATION HELPER";
-    private MediaSessionCompat mMediaSessionCompat;
-    private Service mMediaService;
-    public NotificationHelper(Service pService,Context pContext, MediaSessionCompat pMediaSessionCompat){
+    private final MediaSessionCompat mMediaSessionCompat;
+    private final Service mMediaService;
+    public NotificationHelper(final Service pService, final Context pContext, final MediaSessionCompat pMediaSessionCompat){
         this.mContext=pContext;
         this.mMediaSessionCompat=pMediaSessionCompat;
         this.mMediaService=pService;
     }
-    public void refreshNotificationAndForegroundStatus(int playbackState) {
+    public void refreshNotificationAndForegroundStatus(final int playbackState) {
         Log.d(TAG,"REFRESH NOTIFICATION AND FOREGROUND STATUS");
         switch (playbackState) {
-            case PlaybackStateCompat.STATE_PLAYING: {
-                NotificationManagerCompat.from(mContext).notify(404,getNotification(playbackState));
+            case PlaybackStateCompat.STATE_PLAYING:
+                NotificationManagerCompat.from(mContext).notify(ID,getNotification(playbackState));
                 mMediaService.stopForeground(false);
                 break;
-            }
-            case PlaybackStateCompat.STATE_PAUSED: {
-                NotificationManagerCompat.from(mContext).notify(404,getNotification(playbackState));
+            case PlaybackStateCompat.STATE_PAUSED:
+                NotificationManagerCompat.from(mContext).notify(ID,getNotification(playbackState));
                 mMediaService.stopForeground(false);
                 break;
-            }
-            default: {
-                System.out.println("MCONTEXT " + mContext);
-                System.out.println("MEDIA SESSION COMPAT " + mMediaSessionCompat);
-                System.out.println("SERVICE " + mMediaService);
+            default:
                 mMediaService.stopForeground(true);
                 break;
-            }
         }
     }
-    private Notification getNotification(int playbackState) {
+    private Notification getNotification(final int playbackState) {
         Log.d(TAG,"TRY TO GET NOTIFICATION");
-        NotificationCompat.Builder builder = from(mContext, mMediaSessionCompat);
+        final NotificationCompat.Builder builder = from(mContext, mMediaSessionCompat);
         builder.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_previous, "PREVIOUS",
                 MediaButtonReceiver.buildMediaButtonPendingIntent(mContext, PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS)));
         if (playbackState == PlaybackStateCompat.STATE_PLAYING) {
             builder.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_pause, "PAUSE",
                     MediaButtonReceiver.buildMediaButtonPendingIntent(mContext, PlaybackStateCompat.ACTION_PLAY_PAUSE)));
         }
-        if (playbackState==PlaybackStateCompat.STATE_PAUSED){
+        if (playbackState== PlaybackStateCompat.STATE_PAUSED){
             builder.addAction(new NotificationCompat.Action(android.R.drawable.ic_media_play, "PLAY",
                     MediaButtonReceiver.buildMediaButtonPendingIntent(mContext, PlaybackStateCompat.ACTION_PLAY_PAUSE)));
         }

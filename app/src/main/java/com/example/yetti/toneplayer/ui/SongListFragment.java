@@ -19,36 +19,33 @@ import java.util.List;
 public class SongListFragment extends Fragment {
     List<Song> mSongList;
     private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private SongListAdapter mSongListAdapter;
-    private View.OnClickListener mOnClickListener;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
+                             final Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_song_list, container,false);
         mSongList = new ArrayList<>();
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        Bundle bundle = this.getArguments();
+        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        final Bundle bundle = this.getArguments();
         if (bundle != null) {
             mSongList = bundle.getParcelableArrayList("songs");
         }
         mRecyclerView = (RecyclerView) v.findViewById(R.id.list_songs);
         if (mRecyclerView!=null) {
             mRecyclerView.setHasFixedSize(true);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mOnClickListener = new View.OnClickListener() {
+            mRecyclerView.setLayoutManager(layoutManager);
+            final View.OnClickListener onClickListener = new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
                     MusicRepository.getInstance().setCurrentSongList(mSongList);
-                    int itemPosition=mRecyclerView.getChildLayoutPosition(v);
+                    final int itemPosition = mRecyclerView.getChildLayoutPosition(v);
                     MusicRepository.getInstance().setCurrentPosition(itemPosition);
-                    ((MainActivity)getActivity()).getMediaControllerCompat().getTransportControls().play();
+                    ((MainActivity) getActivity()).getMediaControllerCompat().getTransportControls().play();
                 }
             };
-            mSongListAdapter = new SongListAdapter(mSongList, getActivity().getApplicationContext(),mOnClickListener);
-            mRecyclerView.setAdapter(mSongListAdapter);
+            final SongListAdapter songListAdapter = new SongListAdapter(mSongList, getActivity().getApplicationContext(), onClickListener);
+            mRecyclerView.setAdapter(songListAdapter);
         }
         return v;
     }
