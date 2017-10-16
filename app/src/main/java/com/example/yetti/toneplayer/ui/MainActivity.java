@@ -26,13 +26,18 @@ import com.example.yetti.toneplayer.CoreApplication;
 import com.example.yetti.toneplayer.R;
 import com.example.yetti.toneplayer.callback.ICallbackResult;
 import com.example.yetti.toneplayer.content.ContentHelper;
+import com.example.yetti.toneplayer.database.DBToneContract;
+import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
+import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
+import com.example.yetti.toneplayer.model.SongContract;
+import com.example.yetti.toneplayer.threadmanager.ThreadsManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, IOnArtistSelectedListener {
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
     boolean bound = false;
@@ -43,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private ContentHelper mContentHelper;
     private CoreApplication mMainApplication;
     private AsyncDBServiceImpl mSongDBService;
-
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,10 +69,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         public void onSuccess(final List<Song> pSongList) {
                             setSongListFragment(pSongList);
                             replaceSongListFragment();
+                            toolbar.setTitle("ALL SONGS");
                         }
 
                         @Override
                         public void onError(final Exception e) {
+                            e.printStackTrace();
                             Log.d("MAINACTIVITY","GET SONGS FROM DB EXCEPTION");
                         }
                     });
@@ -80,14 +87,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
         }
     }
+    public void onArtistSelected(final String pArtistName){
+        System.out.println("MAIN ACTIVITY ON ARTIST SELECTED " + pArtistName);
+        DatabaseManager.getInstance().getAsyncDBService().getSongsByArtist(pArtistName, new ICallbackResult<List<Song>>() {
 
+            @Override
+            public void onSuccess(List<Song> pSongList) {
+                setSongListFragment(pSongList);
+                replaceSongListFragment();
+                toolbar.setTitle("SONG BY ARTIST " + pArtistName);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
     private void setSongListFragment(final List<Song> pSongList) {
         final Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("songs", (ArrayList<? extends Parcelable>) pSongList);
         mSongListFragment = new SongListFragment();
         mSongListFragment.setArguments(bundle);
     }
-
+    private void setArtistListFragment(final List<Artist> pArtistList){
+        System.out.println("MAIN ACTIVITY SETUP BUNDLE");
+        List<Artist> artistListToPut=new ArrayList<>();
+        for (Artist artist:pArtistList){
+            if (artist.getArtistArtUrl()!=null && artist.getArtistArtUrl()!=null){
+                artistListToPut.add(artist);
+            }
+        }
+        final Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("artists", (ArrayList<? extends Parcelable>) artistListToPut);
+        mArtistListFragment = new ArtistListFragment();
+        mArtistListFragment.setArguments(bundle);
+    }
     private void replaceSongListFragment() {
         mFragmentTransaction = getFragmentManager().beginTransaction();
         mFragmentTransaction.replace(R.id.frgmCont, mSongListFragment);
@@ -95,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setupNavBarToolbar() {
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         final ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -207,6 +242,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 public void onSuccess(final List<Song> pSongList) {
                     setSongListFragment(pSongList);
                     replaceSongListFragment();
+                    toolbar.setTitle("ALL SONGS");
                 }
 
                 @Override
@@ -215,9 +251,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
             });
         } else if (id == R.id.songs_artists) {
-            mFragmentTransaction = getFragmentManager().beginTransaction();
-            mFragmentTransaction.replace(R.id.frgmCont, mArtistListFragment);
-            mFragmentTransaction.commit();
+            System.out.println("ARTIST FRAGMENT");
+            DatabaseManager.getInstance().getAsyncDBService().getArtists(new ICallbackResult<List<Artist>>() {
+                @Override
+                public void onSuccess(List<Artist> pArtistList) {
+                    if (pArtistList!=null){
+                        setArtistListFragment(pArtistList);
+                        mFragmentTransaction = getFragmentManager().beginTransaction();
+                        mFragmentTransaction.replace(R.id.frgmCont, mArtistListFragment);
+                        mFragmentTransaction.commit();
+                    }
+                }
+                @Override
+                public void onError(Exception e) {
+                    e.printStackTrace();
+                }
+            });
         } else if (id == R.id.songs_playlists) {
 
         } else if (id == R.id.about) {

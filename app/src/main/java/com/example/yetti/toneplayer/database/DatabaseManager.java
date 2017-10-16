@@ -5,24 +5,35 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
-import com.example.yetti.toneplayer.database.impl.DBServiceImpl;
+import com.example.yetti.toneplayer.database.impl.DBArtistServiceImpl;
+import com.example.yetti.toneplayer.database.impl.DBSongServiceImpl;
 
 public class DatabaseManager {
+
     private int mOpenCounter;
     private static DBToneHelper mDatabaseHelper;
     private SQLiteDatabase mDatabase;
-    private static AsyncDBServiceImpl mAsyncDBService;
+    private static DBArtistServiceImpl sDBArtistService;
+    private static DBSongServiceImpl sDBSongService;
+    private static AsyncDBServiceImpl sAsyncDBService;
     private static volatile DatabaseManager sInstance;
-
+    private static final String TAG="DBMANAGER";
     public static synchronized void initializeInstance(final DBToneHelper helper) {
-        Log.d("DBMANAGER","INITIALIZEINSTANCe");
+        Log.d(TAG,"INITIALIZE INSTANCE");
         if (sInstance == null) {
             sInstance = new DatabaseManager();
             mDatabaseHelper = helper;
-            mAsyncDBService = new AsyncDBServiceImpl(new DBServiceImpl());
+            sDBArtistService = new DBArtistServiceImpl();
+            sDBSongService = new DBSongServiceImpl();
+            sAsyncDBService = new AsyncDBServiceImpl(sDBSongService,sDBArtistService);
         }
     }
-
+    public DBSongServiceImpl getDBSongService(){
+        return sDBSongService;
+    }
+    public DBArtistServiceImpl getDBArtistService(){
+        return sDBArtistService;
+    }
     public static synchronized DatabaseManager getInstance() {
         if (sInstance == null) {
             throw new IllegalStateException(DatabaseManager.class.getSimpleName() +
@@ -32,7 +43,7 @@ public class DatabaseManager {
     }
 
     public AsyncDBServiceImpl getAsyncDBService(){
-        return mAsyncDBService;
+        return sAsyncDBService;
     }
     public synchronized SQLiteDatabase openDatabase() {
         mOpenCounter++;

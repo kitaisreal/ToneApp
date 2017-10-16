@@ -93,15 +93,18 @@ public class JsonParserImpl implements IJsonParser {
     @Override
     public Artist convertJsonToArtist(final String pJSONArtist) {
         final Artist artist = new Artist();
-        try {
-            final JSONObject artistJSON = new JSONObject(pJSONArtist);
-            artist.setArtistName((String) artistJSON.get("mArtistName"));
-            artist.setArtistArtUrl((String) artistJSON.get("mArtistArtUrl"));
-            artist.setArtistGenre((String) artistJSON.get("mArtistGenre"));
-            return artist;
+        if (pJSONArtist != null){
+            try {
+                final JSONObject artistJSON = new JSONObject(pJSONArtist);
+                artist.setArtistName((String) artistJSON.get(DBToneContract.ArtistEntry.COLUMN_NAME_ARTIST_NAME));
+                artist.setArtistArtUrl((String) artistJSON.get(DBToneContract.ArtistEntry.COLUMN_NAME_ARTIST_ARTWORKURL));
+                artist.setArtistGenre((String) artistJSON.get(DBToneContract.ArtistEntry.COLUMN_NAME_ARTIST_GENRE));
+                return artist;
 
-        } catch (final JSONException ex) {
-            Log.d(TAG, "CONVERT ARTIST TO JSON EXCEPTION");
+            } catch (final JSONException ex) {
+                ex.printStackTrace();
+                Log.d(TAG, "CONVERT ARTIST TO JSON EXCEPTION");
+            }
         }
         return null;
     }

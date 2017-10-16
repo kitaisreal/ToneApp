@@ -152,7 +152,6 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
             Log.d(TAG, "PLAY SONG EXCEPTION");
         }
     }
-
     private final MediaSessionCompat.Callback mMediaSessionCallback = new MediaSessionCompat.Callback() {
 
         @Override

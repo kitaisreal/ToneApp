@@ -11,10 +11,11 @@ import java.util.List;
 
 public class AsyncDBServiceImpl implements IAsyncDBService {
 
-    private final DBServiceImpl mDBService;
-
-    public AsyncDBServiceImpl(final DBServiceImpl pDBService) {
-        this.mDBService = pDBService;
+    private final DBSongServiceImpl mDBSongService;
+    private final DBArtistServiceImpl mDBArtistService;
+    public AsyncDBServiceImpl(final DBSongServiceImpl pDBService, final DBArtistServiceImpl pDBArtistService) {
+        this.mDBSongService = pDBService;
+        this.mDBArtistService = pDBArtistService;
     }
 
     @Override
@@ -23,7 +24,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected Boolean doInBackground(final Void... params) {
-                return mDBService.addSongs(pSongList);
+                return mDBSongService.addSongs(pSongList);
             }
 
             @Override
@@ -45,7 +46,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected Boolean doInBackground(final Void... params) {
-                return mDBService.updateSongs(pSongList);
+                return mDBSongService.updateSongs(pSongList);
             }
 
             @Override
@@ -67,7 +68,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected Boolean doInBackground(final Void... params) {
-                return mDBService.deleteSongs(pSongList);
+                return mDBSongService.deleteSongs(pSongList);
             }
 
             @Override
@@ -89,7 +90,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected Boolean doInBackground(final Void... params) {
-                return mDBService.deleteSong(pSong);
+                return mDBSongService.deleteSong(pSong);
             }
 
             @Override
@@ -111,7 +112,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected Boolean doInBackground(final Void... params) {
-                return mDBService.updateSong(pSong);
+                return mDBSongService.updateSong(pSong);
             }
 
             @Override
@@ -133,7 +134,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected Song doInBackground(final Void... params) {
-                return mDBService.getSongByID(pID);
+                return mDBSongService.getSongByID(pID);
             }
 
             @Override
@@ -155,7 +156,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected List<Song> doInBackground(final Void... params) {
-                return mDBService.getAllSongs();
+                return mDBSongService.getAllSongs();
             }
 
             @Override
@@ -177,7 +178,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected List<Song> doInBackground(final Void... params) {
-                return mDBService.getSongsByPlaylist(pSongPlaylist);
+                return mDBSongService.getSongsByPlaylist(pSongPlaylist);
             }
 
             @Override
@@ -193,11 +194,11 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
         }.execute();
     }
     @Override
-    public void getArtists(final ICallbackResult<List<Artist>> pArtistListICallbackResult) {
+    public void getArtistsFromSongs(final ICallbackResult<List<Artist>> pArtistListICallbackResult) {
         new AsyncTask<Void, Void, List<Artist>>() {
             @Override
             protected List<Artist> doInBackground(final Void... params) {
-                return mDBService.getArtists();
+                return mDBSongService.getArtists();
             }
 
             @Override
@@ -219,7 +220,7 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
 
             @Override
             protected List<Song> doInBackground(final Void... params) {
-                return mDBService.getSongsByArtist(pArtistTitle);
+                return mDBSongService.getSongsByArtist(pArtistTitle);
             }
 
             @Override
@@ -230,6 +231,94 @@ public class AsyncDBServiceImpl implements IAsyncDBService {
                 else if(pSongListICallbackResult!=null){
                     final Exception exception= new Exception("GET SONG BY ARTIST EXCEPTION");
                     pSongListICallbackResult.onError(exception);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void addArtists(final List<Artist> pArtistList, final ICallbackResult<Boolean> pBooleanICallbackResult) {
+        new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(final Void... params) {
+                return mDBArtistService.addArtists(pArtistList);
+            }
+
+            @Override
+            protected void onPostExecute(final Boolean pBoolean) {
+                if (pBooleanICallbackResult != null && pBoolean) {
+                    pBooleanICallbackResult.onSuccess(true);
+                }
+                else if (pBooleanICallbackResult != null) {
+                    final Exception addSongsEx = new Exception("DB ADD ARTISTS EXCEPTION");
+                    pBooleanICallbackResult.onError(addSongsEx);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void deleteArtists(final List<Artist> pArtistList, final ICallbackResult<Boolean> pBooleanICallbackResult) {
+        new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(final Void... params) {
+                return mDBArtistService.deleteArtists(pArtistList);
+            }
+
+            @Override
+            protected void onPostExecute(final Boolean aBoolean) {
+                if (pBooleanICallbackResult != null && aBoolean) {
+                    pBooleanICallbackResult.onSuccess(true);
+                }
+                else if (pBooleanICallbackResult!=null){
+                    final Exception exception = new Exception("DELETE ARTIST EXCEPTION");
+                    pBooleanICallbackResult.onError(exception);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void getArtistByName(final String pArtistName, final ICallbackResult<Artist> pArtistICallbackResult) {
+        new AsyncTask<Void, Void, Artist>() {
+
+            @Override
+            protected Artist doInBackground(final Void... params) {
+                return mDBArtistService.getArtistByName(pArtistName);
+            }
+
+            @Override
+            protected void onPostExecute(final Artist artist) {
+                if (pArtistICallbackResult != null && artist!=null) {
+                    pArtistICallbackResult.onSuccess(artist);
+                }
+                else if(pArtistICallbackResult!=null){
+                    final Exception exception = new Exception("GET ARTIST BY NAME");
+                    pArtistICallbackResult.onError(exception);
+                }
+            }
+        }.execute();
+    }
+
+    @Override
+    public void getArtists(final ICallbackResult<List<Artist>> pListArtistICallbackResult) {
+        new AsyncTask<Void, Void, List<Artist>>() {
+
+            @Override
+            protected List<Artist> doInBackground(final Void... params) {
+                return mDBArtistService.getArtists();
+            }
+
+            @Override
+            protected void onPostExecute(final List<Artist> pArtistList) {
+                if (pListArtistICallbackResult != null && pArtistList != null) {
+                    pListArtistICallbackResult.onSuccess(pArtistList);
+                }
+                else if(pListArtistICallbackResult!=null){
+                    final Exception exception = new Exception("GET ALL ARTISTS FROM DB EXCEPTION");
+                    pListArtistICallbackResult.onError(exception);
                 }
             }
         }.execute();

@@ -8,8 +8,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.example.yetti.toneplayer.callback.ICallbackResult;
+import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DatabaseManager;
-import com.example.yetti.toneplayer.database.impl.DBServiceImpl;
 import com.example.yetti.toneplayer.json.JsonParserImpl;
 import com.example.yetti.toneplayer.model.Artist;
 import com.example.yetti.toneplayer.model.Song;
@@ -37,6 +37,59 @@ public class ContentHelper {
         mHttpClient = new HttpClient();
     }
     public void initApp(final ICallbackResult<Boolean> pBooleanICallbackResult){
+        new Thread(new Runnable() {
+
+            @Override
+            public void run() {
+                List<Song> songList;
+                List<Artist> artistList;
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Content-Type", "application/json");
+                try {
+                    songList = getSongsFromDevice(mContext);
+                    DatabaseManager.getInstance().getDBSongService().addSongs(songList);
+                    artistList = DatabaseManager.getInstance().getDBSongService().getArtists();
+                    DatabaseManager.getInstance().getDBArtistService().addArtists(artistList);
+                    List<Artist> artistListFromDatabase = DatabaseManager.getInstance().getDBArtistService().getArtists();
+                    List<Artist> artistToUpdateList = new ArrayList<>();
+                    System.out.println(TAG+"ARTIST FROM DATABASE");
+                    for (Artist artist : artistListFromDatabase) {
+                        System.out.println(artist.toString());
+                        if (artist.getArtistGenre()==null && artist.getArtistArtUrl()==null){
+                            artistToUpdateList.add(artist);
+                        }
+                    }
+                    System.out.println(TAG + "ARTIST BEFORE UPDATE");
+                    for (Artist artist:artistToUpdateList){
+                        String result;
+                        if (!Objects.equals(artist.getArtistName(), "<unknown>")) {
+                            final Request request = new Request.RequestBuilder(HttpContract.GET_ARTIST + artist.getArtistName()).
+                                    headers(headers).
+                                    method(HttpContract.GET_METHOD).build();
+                            result = mHttpClient.createRequest(request);
+                            Artist convertedFromResultArtist = mJsonParserImpl.convertJsonToArtist(result);
+                            if (convertedFromResultArtist!=null) {
+                                System.out.println("CONVERTED FROM RESULT ARTIST " + convertedFromResultArtist.toString());
+                                artist.setArtistArtUrl(convertedFromResultArtist.getArtistArtUrl());
+                                artist.setArtistGenre(convertedFromResultArtist.getArtistGenre());
+                                DatabaseManager.getInstance().getDBArtistService().updateArtist(artist);
+                            }
+                        }
+                    }
+                    System.out.println(TAG + " ARTIST AFTER UPDATE");
+                    for (Artist artist: DatabaseManager.getInstance().getDBArtistService().getArtists()){
+                        System.out.println(artist.toString());
+                    }
+                    pBooleanICallbackResult.onSuccess(true);
+                }
+                catch (Exception ex){
+                    ex.printStackTrace();
+                    Exception exception = new Exception("INIT APP EXCEPTION");
+                    pBooleanICallbackResult.onError(ex);
+                }
+            }
+        }).start();
+        /*
         initSongs(new ICallbackResult<Boolean>() {
 
             @Override
@@ -59,10 +112,10 @@ public class ContentHelper {
             public void onError(Exception e) {
 
             }
-        });
+        });*/
     }
     public void initArtists(final ICallbackResult<Boolean> pBooleanICallbackResult) {
-        DatabaseManager.getInstance().getAsyncDBService().getArtists(new ICallbackResult<List<Artist>>() {
+        DatabaseManager.getInstance().getAsyncDBService().getArtistsFromSongs(new ICallbackResult<List<Artist>>() {
 
             @Override
             public void onSuccess(List<Artist> pArtists) {
@@ -88,6 +141,11 @@ public class ContentHelper {
             }
         });
     }
+
+    public List<Artist> getArtistList() {
+        return mArtistList;
+    }
+
     private void getInitialArtistList(final List<Artist> pArtistList, final ICallbackResult<List<Artist>> pListICallbackResult){
 
         Runnable runnable = new Runnable() {

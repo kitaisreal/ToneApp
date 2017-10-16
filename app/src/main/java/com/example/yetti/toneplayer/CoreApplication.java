@@ -9,6 +9,7 @@ import android.os.RemoteException;
 import android.support.v4.media.session.MediaControllerCompat;
 import android.util.Log;
 
+import com.example.yetti.toneplayer.database.DBToneContract;
 import com.example.yetti.toneplayer.database.DBToneHelper;
 import com.example.yetti.toneplayer.database.DatabaseManager;
 import com.example.yetti.toneplayer.database.impl.AsyncDBServiceImpl;
@@ -33,6 +34,7 @@ public class CoreApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        this.deleteDatabase(DBToneContract.Database.DATABASE_NAME);
         Log.d(TAG,"START APPLICATION CREATED");
         ImageLoader.getInstance(this);
         DatabaseManager.initializeInstance(new DBToneHelper(this));

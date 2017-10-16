@@ -5,7 +5,7 @@ import com.example.yetti.toneplayer.model.Song;
 
 import java.util.List;
 
-public interface IDBService {
+public interface IDBSongService {
     boolean addSongs(final List<Song> pSongList);
 
     boolean updateSongs(final List<Song> pSongList);

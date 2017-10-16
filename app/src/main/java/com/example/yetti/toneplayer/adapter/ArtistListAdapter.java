@@ -18,16 +18,16 @@ import java.util.List;
 public class ArtistListAdapter extends  RecyclerView.Adapter<ArtistListAdapter.ViewHolder>{
     private List<Artist> mArtistList;
     private Context mContext;
-    //private View.OnClickListener mOnClickListener;
-    public ArtistListAdapter(Context pContext, List<Artist> pArtistList){
+    private View.OnClickListener mOnClickListener;
+    public ArtistListAdapter(Context pContext, List<Artist> pArtistList, View.OnClickListener pOnClickListener){
         this.mContext=pContext;
         this.mArtistList=pArtistList;
-        //this.mOnClickListener = pOnClickListener;
+        this.mOnClickListener = pOnClickListener;
     }
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.artist_card,parent,false);
-        //v.setOnClickListener(mOnClickListener);
+        v.setOnClickListener(mOnClickListener);
         return new ArtistListAdapter.ViewHolder(v);
     }
 
@@ -36,9 +36,9 @@ public class ArtistListAdapter extends  RecyclerView.Adapter<ArtistListAdapter.V
         Artist artist = mArtistList.get(position);
         System.out.println("ARTIST NAME " + artist.getArtistName());
         System.out.println("URL " + HttpContract.GET_ARTIST +artist.getArtistName());
-        ImageLoader.getInstance(mContext).displayImage("http://localhost:8080/api/getArtistImages/Eminem",holder.mArtistImage);
-        holder.mArtistTitle.setText(artist.getArtistName());
-        holder.mSongCount.setText(String.valueOf("SONGS:"+artist.getSongCount()));
+        ImageLoader.getInstance(mContext).displayImage(artist.getArtistArtUrl(), holder.mArtistImage);
+        holder.mArtistTitle.setText(artist.getArtistName() + " " + artist.getArtistGenre().toLowerCase());
+        holder.mSongCount.setText("SONGS:"+ artist.getSongCount());
     }
 
     @Override

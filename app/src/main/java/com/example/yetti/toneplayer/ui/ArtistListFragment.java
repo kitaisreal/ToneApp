@@ -1,5 +1,6 @@
 package com.example.yetti.toneplayer.ui;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,57 +13,54 @@ import android.view.ViewGroup;
 import com.example.yetti.toneplayer.R;
 import com.example.yetti.toneplayer.adapter.ArtistListAdapter;
 import com.example.yetti.toneplayer.model.Artist;
+import com.example.yetti.toneplayer.musicrepository.MusicRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ArtistListFragment extends Fragment {
-    private RecyclerView mRecyclerView;
-    private RecyclerView.LayoutManager mLayoutManager;
-    private ArtistListAdapter mArtistListAdapter;
-    /*
+    IOnArtistSelectedListener mOnArtistSelectedListener;
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_song_list, container,false);
-        mSongListFragment = new ArrayList<>();
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            mSongListFragment = bundle.getParcelableArrayList("songs");
-        }
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.list_songs);
-        if (mRecyclerView!=null) {
-            mRecyclerView.setHasFixedSize(true);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mOnClickListener = new View.OnClickListener() {
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
 
-                @Override
-                public void onClick(View v) {
-                    MusicRepository.getInstance().setCurrentSongList(mSongListFragment);
-                    int itemPosition=mRecyclerView.getChildLayoutPosition(v);
-                    MusicRepository.getInstance().setCurrentPosition(itemPosition);
-                    ((MainActivity)getActivity()).getMediaControllerCompat().getTransportControls().play();
-                }
-            };
-            mSongListAdapter = new SongListAdapter(mSongListFragment, getActivity().getApplicationContext(),mOnClickListener);
-            mRecyclerView.setAdapter(mSongListAdapter);
+        try {
+            mOnArtistSelectedListener = (IOnArtistSelectedListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnArtistSelectedListener");
         }
-        return v;
+    }
 
-     */
     @Nullable
     @Override
     public View onCreateView(final LayoutInflater inflater, @Nullable final ViewGroup container, final Bundle savedInstanceState) {
+        System.out.println("ARTIST LIST FRAGMENT CREATE VIEW");
         final View view = inflater.inflate(R.layout.fragment_artist_list, container, false);
-        final List<Artist> artistList = new ArrayList<>();
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.artist_list);
-        if (mRecyclerView!=null){
-            mRecyclerView.setHasFixedSize(true);
-            mRecyclerView.setLayoutManager(mLayoutManager);
-            mArtistListAdapter = new ArtistListAdapter( getActivity().getApplicationContext(), artistList);
-            mRecyclerView.setAdapter(mArtistListAdapter);
+        List<Artist> artistList = new ArrayList<>();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.artist_list);
+        final Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            artistList = bundle.getParcelableArrayList("artists");
+            System.out.println("ARTIST LIST " + artistList.size());
+        }
+        if (recyclerView !=null){
+            recyclerView.setHasFixedSize(true);
+            recyclerView.setLayoutManager(layoutManager);
+
+            final List<Artist> finalArtistList = artistList;
+            final View.OnClickListener onClickListener = new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    final int itemPosition = recyclerView.getChildLayoutPosition(v);
+                    mOnArtistSelectedListener.onArtistSelected(finalArtistList.get(itemPosition).getArtistName());
+                }
+            };
+            ArtistListAdapter artistListAdapter = new ArtistListAdapter(getActivity().getApplicationContext(), artistList, onClickListener);
+            recyclerView.setAdapter(artistListAdapter);
         }
         return view;
     }

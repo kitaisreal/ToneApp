@@ -24,7 +24,15 @@ public interface IAsyncDBService {
 
     void getSongsByPlaylist(final int pSongPlaylist, final ICallbackResult<List<Song>> pSongListICallbackResult);
 
-    void getArtists(final ICallbackResult<List<Artist>> pArtistListICallbackResult);
+    void getArtistsFromSongs(final ICallbackResult<List<Artist>> pArtistListICallbackResult);
 
     void getSongsByArtist(final String pArtistTitle, final ICallbackResult<List<Song>> pArtistListICallbackResult);
+
+    void addArtists(final List<Artist> pArtistList, final ICallbackResult<Boolean> pBooleanICallbackResult);
+
+    void deleteArtists(final List<Artist> pArtistList, final ICallbackResult<Boolean> pBooleanICallbackResult);
+
+    void getArtistByName(final String pArtistName, final ICallbackResult<Artist> pArtistICallbackResult);
+
+    void getArtists(final ICallbackResult<List<Artist>> pListArtistICallbackResult);
 }

@@ -18,6 +18,12 @@ public class Artist implements Parcelable {
     public Artist(){
 
     }
+
+    @Override
+    public String toString() {
+        return "ARTIST NAME " + mArtistName + " ARTIST SONG COUNT " + mSongCount + " ARTIST GENRE " + mArtistGenre + " ARTIST ARTWORK URL " + mArtistArtUrl;
+    }
+
     protected Artist(final Parcel in) {
         mArtistName = in.readString();
         mSongCount = in.readLong();
