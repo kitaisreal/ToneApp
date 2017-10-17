@@ -71,8 +71,6 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     public void onDestroy() {
         super.onDestroy();
         Log.d("OUR PROBLEM", "DESTROY");
-        mMediaSessionCompat.release();
-        mMediaPlayer.release();
         Log.d("OUR PROBLEM", "DESROYED");
     }
 
@@ -116,7 +114,11 @@ public class MediaService extends Service implements MediaPlayer.OnPreparedListe
     @Override
     public boolean onUnbind(final Intent intent) {
         Log.d("OUR PROBLEM", "ON UNBIND");
-        prepareToStopService();
+
+        mMediaSessionCompat.release();
+        mMediaPlayer.reset();
+        mMediaPlayer.release();
+        stopSelf();
         return true;
     }
 

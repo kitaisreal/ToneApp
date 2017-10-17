@@ -57,6 +57,7 @@ public class HttpClient {
                 return result.toString(HttpContract.UTF_8);
             }
         } catch (final Exception ex) {
+            ex.printStackTrace();
             Log.d(TAG, "CREATE REQUEST EXCEPTION");
         } finally {
             if (URLConnection != null) {

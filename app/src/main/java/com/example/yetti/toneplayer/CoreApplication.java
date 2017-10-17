@@ -34,7 +34,6 @@ public class CoreApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.deleteDatabase(DBToneContract.Database.DATABASE_NAME);
         Log.d(TAG,"START APPLICATION CREATED");
         ImageLoader.getInstance(this);
         DatabaseManager.initializeInstance(new DBToneHelper(this));

@@ -2,7 +2,7 @@ package com.example.yetti.toneplayer.network;
 
 public final class HttpContract {
 
-    private static final String REST_API_URL = "http://192.168.100.2:8080/api";
+    private static final String REST_API_URL = "http://192.168.56.1:8080/api";
     private static final String RECOMMENDATIONS_PATH = "/getRecommendations";
     private static final String GET_NEXT_SONG_PATH = "/getNextSong";
     private static final String POST_TEST_PATH = "/testPOST";

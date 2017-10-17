@@ -49,7 +49,11 @@ public class ContentHelper {
                     songList = getSongsFromDevice(mContext);
                     DatabaseManager.getInstance().getDBSongService().addSongs(songList);
                     artistList = DatabaseManager.getInstance().getDBSongService().getArtists();
+                    for (Artist artist:artistList){
+                        System.out.println(artist.toString());
+                    }
                     DatabaseManager.getInstance().getDBArtistService().addArtists(artistList);
+                    System.out.println(TAG + " ARTISTS ADDED TO BD");
                     List<Artist> artistListFromDatabase = DatabaseManager.getInstance().getDBArtistService().getArtists();
                     List<Artist> artistToUpdateList = new ArrayList<>();
                     System.out.println(TAG+"ARTIST FROM DATABASE");
@@ -67,6 +71,7 @@ public class ContentHelper {
                                     headers(headers).
                                     method(HttpContract.GET_METHOD).build();
                             result = mHttpClient.createRequest(request);
+                            System.out.println("RESULT " + result);
                             Artist convertedFromResultArtist = mJsonParserImpl.convertJsonToArtist(result);
                             if (convertedFromResultArtist!=null) {
                                 System.out.println("CONVERTED FROM RESULT ARTIST " + convertedFromResultArtist.toString());
